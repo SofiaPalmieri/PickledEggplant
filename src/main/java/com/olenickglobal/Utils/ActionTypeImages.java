@@ -3,6 +3,7 @@ package com.olenickglobal.Utils;
 import org.sikuli.script.FindFailed;
 
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public enum ActionTypeImages {
     CLICK((ScreenSection image, int timeout) -> {
@@ -30,7 +31,7 @@ public enum ActionTypeImages {
 
     public final ClickActionImage action;
 
-    public void executeAction(ScreenSection image, int timeout) throws FindFailedHandler, IOException, FindFailed {
+    public void executeAction(ScreenSection image, int timeout) throws FindFailedHandler, IOException, FindFailed, URISyntaxException {
         this.action.executeAction(image, timeout);
         //ActionTypeImages.TAKE_SCREENSHOT.executeAction(image, timeout);
     }

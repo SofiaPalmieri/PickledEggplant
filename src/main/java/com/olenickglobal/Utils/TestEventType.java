@@ -1,6 +1,6 @@
 package com.olenickglobal.Utils;
 
-public enum TestTimeType {
+public enum TestEventType {
     PERFORMANCE,
     TESTCASE,
     INFO,

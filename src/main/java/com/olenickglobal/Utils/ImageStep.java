@@ -4,6 +4,7 @@ import org.sikuli.script.FindFailed;
 
 import java.awt.*;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class ImageStep extends Step{
 
@@ -33,6 +34,8 @@ public class ImageStep extends Step{
             //robot.saveScreenshot();
             stepResult.result = "Fail";
             stepResult.expected = expectedResult;
+            throw new RuntimeException(e);
+        } catch (URISyntaxException e) {
             throw new RuntimeException(e);
         }
         return stepResult;

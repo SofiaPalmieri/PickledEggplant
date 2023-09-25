@@ -11,6 +11,15 @@ public class TextStep extends Step{
 
     ActionTypeText actionType;
 
+    public TextStep(String name,String expectedResult,int timeout, String text, ActionTypeText actionType) {
+        this.name = name;
+        this.expectedResult = expectedResult;
+        this.timeout = timeout;
+        this.text = text;
+        this.actionType = actionType;
+    }
+
+
 
     public StepResult executeAction() throws FindFailedHandler, IOException, AWTException {
         StepResult stepResult = new StepResult();
@@ -35,12 +44,5 @@ public class TextStep extends Step{
             throw new RuntimeException(e);
         }
         return stepResult;
-    }
-    public TextStep(String name,String expectedResult,int timeout, String text, ActionTypeText actionType){
-        this.name = name;
-        this.expectedResult = expectedResult;
-        this.timeout = timeout;
-        this.text = text;
-        this.actionType = actionType;
     }
 }

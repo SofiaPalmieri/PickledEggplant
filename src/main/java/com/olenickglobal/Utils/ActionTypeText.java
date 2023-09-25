@@ -18,6 +18,9 @@ public enum ActionTypeText {
     }),
     TYPE_TEXT((PickledRobot robot, String text) -> {
        robot.typeText(text);
+    }),
+    TAKE_SCREENSHOT((PickledRobot robot, String text) ->{
+        robot.saveScreenshot();
     })
     ;
 

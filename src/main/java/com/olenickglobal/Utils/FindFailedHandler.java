@@ -7,6 +7,7 @@ import org.sikuli.script.Screen;
 
 import javax.swing.*;
 import java.io.IOException;
+import java.net.URISyntaxException;
 
 public class FindFailedHandler extends Throwable {
 
@@ -20,7 +21,7 @@ public class FindFailedHandler extends Throwable {
     }
 
 
-    public void handleFinds(String imageName) throws IOException, FindFailed, ClassNotFoundException {
+    public void handleFinds(String imageName) throws IOException, FindFailed, ClassNotFoundException, URISyntaxException {
 
         try {
             Pattern image = patternHandler.handlePattern(imageName);
