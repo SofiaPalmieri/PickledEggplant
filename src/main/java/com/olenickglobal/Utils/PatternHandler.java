@@ -12,6 +12,7 @@ public class PatternHandler{
 
     @SuppressWarnings("ConstantConditions")
     public String getPatternFromLocalFile(String imageName) {
+
         /*
             return new File(getClass().getClassLoader().getResource("images/" + imageName).toURI()).getAbsolutePath();
             */

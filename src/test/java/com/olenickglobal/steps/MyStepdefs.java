@@ -1,16 +1,16 @@
 package com.olenickglobal.steps;
 
-import com.olenickglobal.Utils.ActionTypeImages;
-import com.olenickglobal.Utils.ActionTypeText;
+
 import com.olenickglobal.Utils.FindFailedHandler;
-import com.olenickglobal.Utils.ImageStep;
-import com.olenickglobal.Utils.TextStep;
-import io.cucumber.java.PendingException;
-import io.cucumber.java.en.And;
+import com.olenickglobal.Utils.ImageElement;
+import com.olenickglobal.Utils.SUT;
+import com.olenickglobal.Utils.TextElement;
+
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.EventPublisher;
+import org.sikuli.script.FindFailed;
 
 import java.awt.*;
 import java.io.IOException;
@@ -18,27 +18,27 @@ import java.io.IOException;
 public class MyStepdefs implements ConcurrentEventListener {
 
         @When("I click windows start button")
-        public void clickWindowsStartButton() throws FindFailedHandler, IOException, AWTException {
-            ImageStep clickWindowsStartButton = new ImageStep("Click windows start button", "Windows start menu displays", 15, "windowsStartButton.png", ActionTypeImages.CLICK);
-            clickWindowsStartButton.executeAction();
+        public void clickWindowsStartButton() throws  FindFailed {
+            ImageElement clickWindowsStartButton = new ImageElement( "windowsStartButton.png");
+            clickWindowsStartButton.click(20);
         }
 
         @When("search for {string}")
-        public void searchForApplication(String appName) throws FindFailedHandler, IOException, AWTException {
-            TextStep application = new TextStep("Search for " + appName, appName+" is listed in Windows start menu", 15, appName, ActionTypeText.TYPE_TEXT);
-            application.executeAction();
+        public void searchForApplication(String appName) throws FindFailed {
+            SUT sut = new SUT();
+            sut.typeText(appName);
         }
 
         @When("launch {string}")
-        public void launchApplication(String appName) throws FindFailedHandler, IOException, AWTException {
-            ImageStep application = new ImageStep("Launch "+ appName , appName+" launches", 15, appName+"Icon.png", ActionTypeImages.CLICK);
-            application.executeAction();
+        public void launchApplication(String appName) throws  FindFailed {
+            ImageElement application = new ImageElement( appName+"Icon.png");
+            application.click(15);
         }
 
         @Then("{string} launches")
-        public void applicationLaunches(String appName) throws FindFailedHandler, IOException, AWTException {
-            ImageStep application = new ImageStep("Verify "+appName+ "launches", appName+" launches successfully", 15, appName+"TaskBarIcon.png", ActionTypeImages.MOVE_TO);
-            application.executeAction();
+        public void applicationLaunches(String appName) throws FindFailed {
+            ImageElement application = new ImageElement(appName+"TaskBarIcon.png");
+            application.waitFor(10);
     }
 
     @Override

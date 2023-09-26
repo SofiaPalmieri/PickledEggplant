@@ -11,8 +11,6 @@ public class DependencyHandler {
 
     private static DependencyHandler instance;
 
-    Screen screen;
-    PatternHandler patternHandler;
 
     static public DependencyHandler getInstance() {
         if (instance == null) {
@@ -21,13 +19,6 @@ public class DependencyHandler {
         return instance;
     }
 
-    public void loadDependencies(){
-        nu.pattern.OpenCV.loadLocally();
-    }
-
-    public String getImage(String name) throws FindFailedHandler {
-        return this.getFullPath(name + ".png");
-    }
 
     public ITesseract getTesseract(){
         ITesseract iTesseract =  new Tesseract();
@@ -38,19 +29,8 @@ public class DependencyHandler {
         return  iTesseract;
     }
 
-    public String getFullPath(String content) throws FindFailedHandler {
-        ClassLoader classLoader = ScreenSection.class.getClassLoader();
-        URL resource = classLoader.getResource(content);
-        System.out.println(resource);
-        if (resource != null) {
-            return resource.getPath();
-        } else {
-            throw new FindFailedHandler(screen, patternHandler);
-        }
-    }
 
-    private DependencyHandler(){
-    }
+
 
 
 
