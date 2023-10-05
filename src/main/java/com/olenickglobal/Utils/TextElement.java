@@ -26,7 +26,7 @@ public class TextElement implements ScreenElement {
 
     public TextElement(Rectangle readLocation) throws FindFailed{
         try {
-            ITesseract tesseract = DependencyHandler.getInstance().getTesseract();
+            ITesseract tesseract = new ConfigReader().getTesseract();
             BufferedImage screen = new SUT().getCroppedScreen(readLocation);
             this.textToFind = tesseract.doOCR(screen);
         } catch (TesseractException  t ){
@@ -93,7 +93,7 @@ public class TextElement implements ScreenElement {
         long limit = this.getTimeoutLimit(timeout);
         while (this.notTimedOut(limit)) {
             BufferedImage screen = new SUT().getCurrentScreen();
-            ITesseract instance = DependencyHandler.getInstance().getTesseract();
+            ITesseract instance = new ConfigReader().getTesseract();
 
             List<Word> wordBoxes = instance.getWords(screen, ITessAPI.TessPageIteratorLevel.RIL_WORD);
             List<String> wordsToFind = List.of(this.textToFind.split(" "));

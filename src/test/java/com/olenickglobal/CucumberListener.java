@@ -1,5 +1,6 @@
 package com.olenickglobal;
 
+import com.olenickglobal.Utils.ConfigReader;
 import com.olenickglobal.Utils.TestEventResult;
 import com.olenickglobal.Utils.TestEventType;
 import io.cucumber.plugin.ConcurrentEventListener;
@@ -49,7 +50,7 @@ public class CucumberListener implements ConcurrentEventListener {
 
     int rowNumber = 0;
 
-    File file = new File("C:/Users/sofia/OneDrive - UTN.BA/PC/OneDrive - UTN.BA/Qualitest/test.xlsx");
+    File file = new File(Configuration.getInstance().getConfig(Configuration.Configs.EXCEL_PATH));
 
     Map<TestCase, TestEventResult> results = new LinkedHashMap<>();
 
@@ -70,7 +71,6 @@ public class CucumberListener implements ConcurrentEventListener {
         Robot robot;
         try {
             robot = new Robot();
-
         } catch (AWTException e) {
             throw new RuntimeException(e);
         }
@@ -84,8 +84,8 @@ public class CucumberListener implements ConcurrentEventListener {
         System.out.println(localDateTime);
         String fileName;
         fileName = ((PickleStepTestStep) event.getTestStep()).getStep().getText().replaceAll("[\\s,.:;]", "_").replaceAll("[^0-9A-Za-z_]", "") + localDateTime + ".jpg";
-        File file = new File("C:/Users/sofia/OneDrive - UTN.BA/PC/OneDrive - UTN.BA/Qualitest/PickledEggplant/src/main/resources/" + fileName);
-        stepResult.image = "C:/Users/sofia/OneDrive - UTN.BA/PC/OneDrive - UTN.BA/Qualitest/PickledEggplant/src/main/resources/" + fileName;
+        File file = new File(new ConfigReader().readConfig("IMAGES_PATH") + "\\" + fileName);
+        stepResult.image = new ConfigReader().readConfig("IMAGES_PATH")+ "\\"+ fileName;
         try {
             ImageIO.write(originalCapture, "jpg", file);
 
