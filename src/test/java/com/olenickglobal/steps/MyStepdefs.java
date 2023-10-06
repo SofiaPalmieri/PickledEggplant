@@ -1,19 +1,14 @@
 package com.olenickglobal.steps;
 
 
-import com.olenickglobal.Utils.FindFailedHandler;
 import com.olenickglobal.Utils.ImageElement;
 import com.olenickglobal.Utils.SUT;
-import com.olenickglobal.Utils.TextElement;
 
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.EventPublisher;
 import org.sikuli.script.FindFailed;
-
-import java.awt.*;
-import java.io.IOException;
 
 public class MyStepdefs implements ConcurrentEventListener {
 

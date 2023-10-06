@@ -22,11 +22,7 @@ public class ImageElement implements ScreenElement {
     }
 
     public String getFullImagePath(String imageName){
-        try {
-            return new File(Objects.requireNonNull(getClass().getClassLoader().getResource("images/" + imageName)).toURI()).getAbsolutePath();
-        } catch (URISyntaxException e) {
-            throw new RuntimeException(e);
-        }
+        return  new ConfigReader().readConfig(ConfigReader.Configs.IMAGES_PATH) +"//"+ imageName;
     }
 
 

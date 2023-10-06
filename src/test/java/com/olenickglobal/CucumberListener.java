@@ -50,7 +50,7 @@ public class CucumberListener implements ConcurrentEventListener {
 
     int rowNumber = 0;
 
-    File file = new File(Configuration.getInstance().getConfig(Configuration.Configs.EXCEL_PATH));
+    File file = new File(new ConfigReader().readConfig(ConfigReader.Configs.EXCEL_PATH));
 
     Map<TestCase, TestEventResult> results = new LinkedHashMap<>();
 
@@ -84,8 +84,8 @@ public class CucumberListener implements ConcurrentEventListener {
         System.out.println(localDateTime);
         String fileName;
         fileName = ((PickleStepTestStep) event.getTestStep()).getStep().getText().replaceAll("[\\s,.:;]", "_").replaceAll("[^0-9A-Za-z_]", "") + localDateTime + ".jpg";
-        File file = new File(new ConfigReader().readConfig("IMAGES_PATH") + "\\" + fileName);
-        stepResult.image = new ConfigReader().readConfig("IMAGES_PATH")+ "\\"+ fileName;
+        File file = new File(new ConfigReader().readConfig(ConfigReader.Configs.SCREENSHOTS_PATH) + "\\" + fileName);
+        stepResult.image = new ConfigReader().readConfig(ConfigReader.Configs.SCREENSHOTS_PATH)+ "\\"+ fileName;
         try {
             ImageIO.write(originalCapture, "jpg", file);
 

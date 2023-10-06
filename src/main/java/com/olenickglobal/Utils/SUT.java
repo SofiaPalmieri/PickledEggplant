@@ -36,7 +36,7 @@ public class SUT {
     public void captureScreenshot()  {
         try {
             BufferedImage image = this.robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-            ImageIO.write(image, "png", new File("src/test/java/resources/screenshots/"+ System.currentTimeMillis()+".png"));
+            ImageIO.write(image, "png", new File(new ConfigReader().getImageName("Screenshot"+ System.currentTimeMillis()+".png")));
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
