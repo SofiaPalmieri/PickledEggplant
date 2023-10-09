@@ -14,6 +14,10 @@ public class ConfigReader {
         return readConfig(Configs.IMAGES_PATH) + "//" + imageName;
     }
 
+    public String getScreenshotName(String screenshotName) {
+        return readConfig(Configs.SCREENSHOTS_PATH) + "//" + screenshotName;
+    }
+
     public enum Configs {
         IMAGES_PATH,
         EXCEL_PATH,
