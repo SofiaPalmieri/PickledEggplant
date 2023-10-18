@@ -22,7 +22,7 @@ public class ImageElement implements ScreenElement {
     }
 
     public String getFullImagePath(String imageName){
-        return  new ConfigReader().readConfig(ConfigReader.Configs.IMAGES_PATH) +"//"+ imageName;
+        return  ConfigReader.getInstance().readConfig(ConfigReader.Configs.IMAGES_PATH) +"//"+ imageName;
     }
 
 

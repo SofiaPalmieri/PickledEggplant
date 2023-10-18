@@ -1,5 +1,7 @@
 package com.olenickglobal.Utils;
 
+import io.cucumber.plugin.event.Status;
+
 import java.io.File;
 import java.time.LocalDateTime;
 
@@ -10,23 +12,17 @@ public class StepRunInfo {
 
     public String stepName;
 
-    public Status status;
+    public String expectedResult;
 
-    public void setScreenshot(File image) {
-    }
+    public io.cucumber.plugin.event.Status status;
 
-    public enum Status {
-        PASSED,
-        FAILED,
-        SKIPPED
-    }
+    public File screenshot;
+
 
     public StepRunInfo(String name,LocalDateTime startTime) {
         this.stepName = name;
         this.startTime = startTime;
     }
-
-
 
 
 

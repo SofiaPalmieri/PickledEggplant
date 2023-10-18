@@ -16,7 +16,9 @@ import java.util.List;
 public class TextElement implements ScreenElement {
 
     private static final double SEARCH_SCALE_FACTOR = 5;
-    private final String textToFind;
+    private  String textToFind;
+
+    private final ExceptionManager manager = new ExceptionManager();
 
     Screen screen;
 
@@ -25,14 +27,14 @@ public class TextElement implements ScreenElement {
     }
 
     public TextElement(Rectangle readLocation) throws FindFailed{
-        try {
-            ITesseract tesseract = new ConfigReader().getTesseract();
-            BufferedImage screen = new SUT().getCroppedScreen(readLocation);
-            this.textToFind = tesseract.doOCR(screen);
-        } catch (TesseractException  t ){
-            throw new RuntimeException(t);
-        }
+        ITesseract tesseract = ConfigReader.getInstance().getTesseract();
+        BufferedImage screen = new SUT().getCroppedScreen(readLocation);
+manager.withException(() -> {
+    this.textToFind = tesseract.doOCR(screen);
+}, "Failure performing OCR on the specified rectangle");
+
     }
+
 
 
     @Override
@@ -93,7 +95,7 @@ public class TextElement implements ScreenElement {
         long limit = this.getTimeoutLimit(timeout);
         while (this.notTimedOut(limit)) {
             BufferedImage screen = new SUT().getCurrentScreen();
-            ITesseract instance = new ConfigReader().getTesseract();
+            ITesseract instance = ConfigReader.getInstance().getTesseract();
 
             List<Word> wordBoxes = instance.getWords(screen, ITessAPI.TessPageIteratorLevel.RIL_WORD);
             List<String> wordsToFind = List.of(this.textToFind.split(" "));

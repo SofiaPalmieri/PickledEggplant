@@ -3,8 +3,11 @@ package listeners;
 
 import com.olenickglobal.TestResults;
 import com.olenickglobal.Utils.ConfigReader;
+import com.olenickglobal.Utils.ExceptionManager;
+import com.olenickglobal.Utils.SUT;
 import com.olenickglobal.Utils.StepRunInfo;
 import io.cucumber.plugin.event.PickleStepTestStep;
+import io.cucumber.plugin.event.TestCaseStarted;
 import io.cucumber.plugin.event.TestStepFinished;
 
 import javax.imageio.ImageIO;
@@ -19,37 +22,26 @@ public class ScreenshotCapturer {
 
     private static final DateTimeFormatter FILENAME_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss-SSS");
 
+    private static final ExceptionManager manager = new ExceptionManager();
 
     public void captureScreenshotForStep(TestStepFinished event, TestResults testResults) {
         StepRunInfo lastStepInfo = testResults.getInfoFor(event.getTestCase()).getLastStepInfo();
-        File image = getScreenshot(event);
-        lastStepInfo.setScreenshot(image);
+        lastStepInfo.screenshot = getScreenshot(event);
     }
 
-    public File getScreenshot(TestStepFinished event) {
-        Robot robot;
-        try {
-            robot = new Robot();
-        } catch (AWTException e) {
-            throw new RuntimeException(e);
-        }
-        Rectangle rectangle = new Rectangle(Toolkit.getDefaultToolkit().getScreenSize());
-        BufferedImage tempImage = robot.createScreenCapture(rectangle);
-        return imageInMainFolder(event, tempImage);
-    }
-
-    public File imageInMainFolder(TestStepFinished event, BufferedImage image){
+    public File getScreenshot(TestStepFinished event){
+        BufferedImage image = new SUT().getCurrentScreen();
         BufferedImage mainImage = new BufferedImage(image.getWidth(), image.getHeight(), BufferedImage.TYPE_3BYTE_BGR);
         mainImage.getGraphics().drawImage(image, 0, 0, null);
         String localDateTime = LocalDateTime.now().format(FILENAME_FORMATTER);
         String fileName;
         fileName = ((PickleStepTestStep) event.getTestStep()).getStep().getText().replaceAll("[\\s,.:;]", "_").replaceAll("[^0-9A-Za-z_]", "") + localDateTime + ".jpg";
-        File file = new File(new ConfigReader().getScreenshotName(fileName));
-        try {
+        File file = new File(ConfigReader.getInstance().getScreenshotName(fileName));
+        manager.withException(() -> {
             ImageIO.write(mainImage, "jpg", file);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+        }, "Writing created screenshot to file failed");
         return file;
     }
+
+
 }

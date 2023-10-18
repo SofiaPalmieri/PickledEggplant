@@ -2,23 +2,21 @@ package com.olenickglobal.Utils;
 
 
 
-import javax.imageio.ImageIO;
+
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.IOException;
+
 
 
 public class SUT {
 
     private Robot robot;
+    private final ExceptionManager manager = new ExceptionManager();
 
     public SUT(){
-        try {
+        manager.withException(() -> {
             this.robot = new Robot();
-        } catch (AWTException awtException) {
-            throw new RuntimeException();
-        }
+        }, "Robot initialization failed in SUT constructor");
     }
 
     public BufferedImage getCroppedScreen (Rectangle rectangle){
@@ -32,16 +30,6 @@ public class SUT {
             this.robot.keyRelease(c);
         }
     }
-
-    public void captureScreenshot()  {
-        try {
-            BufferedImage image = this.robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
-            ImageIO.write(image, "png", new File(new ConfigReader().getImageName("Screenshot"+ System.currentTimeMillis()+".png")));
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
-       }
 
 
     public BufferedImage getCurrentScreen() {

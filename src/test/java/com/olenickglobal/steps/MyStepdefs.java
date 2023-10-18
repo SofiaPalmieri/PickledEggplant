@@ -1,9 +1,11 @@
 package com.olenickglobal.steps;
 
 
+import com.olenickglobal.Utils.ConfigReader;
 import com.olenickglobal.Utils.ImageElement;
 import com.olenickglobal.Utils.SUT;
 
+import com.olenickglobal.Utils.TextElement;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import io.cucumber.plugin.ConcurrentEventListener;
@@ -36,10 +38,9 @@ public class MyStepdefs implements ConcurrentEventListener {
             application.waitFor(10);
     }
 
+
     @Override
     public void setEventPublisher(EventPublisher eventPublisher) {
 
     }
-
-
 }
