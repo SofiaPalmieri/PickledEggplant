@@ -1,6 +1,5 @@
 package com.olenickglobal.Utils;
 
-import org.sikuli.script.App;
 
 public class Application {
 

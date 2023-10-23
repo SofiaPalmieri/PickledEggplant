@@ -1,5 +1,6 @@
 package com.olenickglobal.Utils;
 
+import com.olenickglobal.Exceptions.TesseractOCRException;
 import net.sourceforge.tess4j.ITessAPI;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.TesseractException;
@@ -10,7 +11,6 @@ import org.sikuli.script.Screen;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.io.IOException;
 import java.util.List;
 
 public class TextElement implements ScreenElement {
@@ -18,7 +18,7 @@ public class TextElement implements ScreenElement {
     private static final double SEARCH_SCALE_FACTOR = 5;
     private  String textToFind;
 
-    private final ExceptionManager manager = new ExceptionManager();
+    private ScreenCapture capture;
 
     Screen screen;
 
@@ -26,12 +26,15 @@ public class TextElement implements ScreenElement {
         this.textToFind = textToFind;
     }
 
-    public TextElement(Rectangle readLocation) throws FindFailed{
+    public TextElement(ScreenCapture capture) throws FindFailed{
         ITesseract tesseract = ConfigReader.getInstance().getTesseract();
-        BufferedImage screen = new SUT().getCroppedScreen(readLocation);
-manager.withException(() -> {
-    this.textToFind = tesseract.doOCR(screen);
-}, "Failure performing OCR on the specified rectangle");
+
+        try {
+            this.textToFind = tesseract.doOCR(capture.getImage());
+        } catch (TesseractException e) {
+            throw new TesseractOCRException(e);
+        }
+
 
     }
 
@@ -94,7 +97,7 @@ manager.withException(() -> {
     private Rectangle find(Integer timeout) throws FindFailed {
         long limit = this.getTimeoutLimit(timeout);
         while (this.notTimedOut(limit)) {
-            BufferedImage screen = new SUT().getCurrentScreen();
+            BufferedImage screen = capture.getImage();
             ITesseract instance = ConfigReader.getInstance().getTesseract();
 
             List<Word> wordBoxes = instance.getWords(screen, ITessAPI.TessPageIteratorLevel.RIL_WORD);

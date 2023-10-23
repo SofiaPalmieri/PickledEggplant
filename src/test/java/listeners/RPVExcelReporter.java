@@ -1,8 +1,8 @@
 package listeners;
 
+import com.olenickglobal.Exceptions.OpeningExcelInReport;
 import com.olenickglobal.TestResults;
 import com.olenickglobal.Utils.ConfigReader;
-import com.olenickglobal.Utils.ExceptionManager;
 import com.olenickglobal.Utils.StepRunInfo;
 import com.olenickglobal.Utils.TestRunInfo;
 import io.cucumber.plugin.event.*;
@@ -10,16 +10,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.atomic.AtomicInteger;
+
 
 public class RPVExcelReporter {
 
-    ExceptionManager manager = new ExceptionManager();
 
 
     public enum COLUMNS {
@@ -64,9 +62,14 @@ public class RPVExcelReporter {
        TestCase test =  event.getTestCase();
        TestRunInfo testRunInfo = testResults.getInfoFor(test);
 
-       manager.withException(() -> {
-           Workbook workbook = WorkbookFactory.create(new FileInputStream(file));
-           Sheet sheet = workbook.getSheetAt(0);
+
+        Workbook workbook = null;
+        try {
+            workbook = WorkbookFactory.create(new FileInputStream(file));
+        } catch (IOException e) {
+            throw new OpeningExcelInReport(e);
+        }
+        Sheet sheet = workbook.getSheetAt(0);
            WriteFirstEntry(sheet,testRunInfo);
 
            testRunInfo.steps.forEach((stepRunInfo) -> {
@@ -74,7 +77,7 @@ public class RPVExcelReporter {
 
            });
            WriteLastEntry(sheet,testRunInfo);
-       }, "Error opening workbook");
+
 
 
     }
@@ -128,9 +131,7 @@ public class RPVExcelReporter {
         switch (status){
             case PASSED:
                 return "Pass";
-            case FAILED:
-                return "Fail";
-            case SKIPPED:
+            case FAILED, SKIPPED:
                 return "Fail";
             default:
                 return "Unknown";

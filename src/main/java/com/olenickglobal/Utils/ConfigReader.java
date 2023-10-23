@@ -1,6 +1,8 @@
 package com.olenickglobal.Utils;
 
 import com.google.gson.Gson;
+import com.olenickglobal.Exceptions.FailureToAddRuntimeProperties;
+import com.olenickglobal.Exceptions.FailureToAddStaticConfig;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 
@@ -19,17 +21,17 @@ public class ConfigReader {
         addRuntimeConfigs();
     }
 
-    private void addStaticConfigs(){
+    private void addStaticConfigs() {
         Gson gson = new Gson();
-        try(BufferedReader br = new BufferedReader(new FileReader(this.getConfigPath()))){
+        try(BufferedReader br = new BufferedReader(new FileReader(this.readConfig(Configs.CONFIG_FILE)))){
             this.configurations = gson.fromJson(br, Map.class);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new FailureToAddStaticConfig(e);
         }
     }
 
     private void addRuntimeConfigs(){
-        File properties = new File(System.getProperty("runtimeProperties"));
+        File properties = new File(this.readConfig(Configs.RUNTIME_PROPERTIES_FILE));
         if (properties.exists()){
             try(BufferedReader br = new BufferedReader(new FileReader(properties))){
                 String line;
@@ -38,7 +40,7 @@ public class ConfigReader {
                     this.configurations.put(keyValue[0],keyValue[1]);
                 }
             } catch (IOException e) {
-
+                throw new FailureToAddRuntimeProperties(e);
             }
         }
     }
@@ -64,8 +66,10 @@ public class ConfigReader {
         EXCEL_PATH,
         TESSERACT_DATA_PATH,
         SCREENSHOTS_PATH,
-
-        FEATURE_PATH,
+        CONFIG_FILE,
+        RUNTIME_PROPERTIES_FILE,
+        TESTNG_XML_FILE,
+        FEATURE_LIST_FILE;
 
     }
 
@@ -74,14 +78,15 @@ public class ConfigReader {
     }
 
     public String readConfig(String configName) {
-       String configValue =  System.getProperty(configName);
-         if (configValue == null){
-              configValue = this.configurations.get(configName);
-              if (configValue == null){
-                  throw new RuntimeException("Config " + configName + " not found");
-              }
-         }
-         return configValue;
+        String configValue = null;
+        if (System.getProperty(configName) != null){
+            configValue = System.getProperty(configName);
+        } else if (this.configurations.get(configName) != null){
+            configValue = this.configurations.get(configName);
+        } else {
+            throw new RuntimeException("Config " + configName + " not found");
+        }
+        return configValue;
     }
 
 
@@ -92,10 +97,6 @@ public class ConfigReader {
         iTesseract.setVariable("user_defined_dpi", "96");
         iTesseract.setVariable("tessedit_pageseg_mode", "11");
         return  iTesseract;
-    }
-
-    public String getConfigPath() {
-        return System.getProperty("configFile");
     }
 
 }

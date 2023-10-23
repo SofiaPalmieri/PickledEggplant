@@ -1,39 +1,40 @@
 package com.olenickglobal.Utils;
 
 
-
+import com.olenickglobal.Exceptions.SUTRobot;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
 
 
-
 public class SUT {
 
     private Robot robot;
-    private final ExceptionManager manager = new ExceptionManager();
 
-    public SUT(){
-        manager.withException(() -> {
+    public SUT() {
+        try {
             this.robot = new Robot();
-        }, "Robot initialization failed in SUT constructor");
+        } catch (AWTException e) {
+            throw new SUTRobot(e);
+        }
+
     }
 
-    public BufferedImage getCroppedScreen (Rectangle rectangle){
-        BufferedImage screen = this.getCurrentScreen();
-        return screen.getSubimage(rectangle.x,rectangle.y,rectangle.width,rectangle.height);
+    public ScreenCapture getCroppedScreen(Rectangle rectangle) {
+        ScreenCapture capture = this.getCurrentScreen();
+        return capture.cropTo(rectangle);
     }
 
-    public void typeText(String text){
-        for (char c : text.toCharArray()){
+    public void typeText(String text) {
+        for (char c : text.toCharArray()) {
             this.robot.keyPress(c);
             this.robot.keyRelease(c);
         }
     }
 
-
-    public BufferedImage getCurrentScreen() {
-        return this.robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize()));
+    public ScreenCapture getCurrentScreen() {
+        return new ScreenCapture(this.robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())));
     }
+
 }
 
