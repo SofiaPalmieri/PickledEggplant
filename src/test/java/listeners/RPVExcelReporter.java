@@ -10,13 +10,14 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.usermodel.WorkbookFactory;
+import org.json.JSONObject;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-
-public class RPVExcelReporter {
+public class RPVExcelReporter implements Reporter {
 
 
 
@@ -48,16 +49,14 @@ public class RPVExcelReporter {
             this.index = index;
         }
 
-
-
     }
 
 
     private final DateTimeFormatter DATETIME_EXCEL_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss:SSS");
 
-    private final File file = new File(ConfigReader.getInstance().readConfig(ConfigReader.Configs.EXCEL_PATH));
+    private final File file = new File(ConfigReader.getInstance().<String>readConfig(ConfigReader.Configs.EXCEL_PATH, ConfigReader.SupportedTypes.STRING));
 
-    public void loadIntoExcel(TestCaseFinished event, TestResults testResults) {
+    public void reportEvent(TestCaseFinished event, TestResults testResults) {
 
        TestCase test =  event.getTestCase();
        TestRunInfo testRunInfo = testResults.getInfoFor(test);
@@ -70,16 +69,18 @@ public class RPVExcelReporter {
             throw new OpeningExcelInReport(e);
         }
         Sheet sheet = workbook.getSheetAt(0);
-           WriteFirstEntry(sheet,testRunInfo);
 
-           testRunInfo.steps.forEach((stepRunInfo) -> {
-               WriteStep(sheet,testRunInfo,stepRunInfo);
+        WriteFirstEntry(sheet,testRunInfo);
+        testRunInfo.steps.forEach((stepRunInfo) -> {
+            WriteStep(sheet,testRunInfo,stepRunInfo);
+        });
+        WriteLastEntry(sheet,testRunInfo);
 
-           });
-           WriteLastEntry(sheet,testRunInfo);
+    }
 
-
-
+    @Override
+    public Reporter build(JSONObject section) {
+        return this;
     }
 
     private void WriteLastEntry(Sheet sheet, TestRunInfo testRunInfo) {
@@ -95,12 +96,12 @@ public class RPVExcelReporter {
         row.createCell(COLUMNS.IMAGE_COMMENT.index).setCellValue("NULL");
         row.createCell(COLUMNS.IMAGE.index).setCellValue("NULL");
         row.createCell(COLUMNS.IN_ADO.index).setCellValue("NULL");
-        row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().readConfig("SYSTEM_NAME" ));
-        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().readConfig("SYSTEM_ID"));
+        row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_NAME" , ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_ID", ConfigReader.SupportedTypes.STRING));
         row.createCell(COLUMNS.RUN.index).setCellValue("NULL");
         row.createCell(COLUMNS.STATE.index).setCellValue("VALID");
-        row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().readConfig("SESSION_COLLECTION_ID"));
-        row.createCell(COLUMNS.SESSION_ID.index).setCellValue(ConfigReader.getInstance().readConfig("SESSION_ID"));
+        row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SESSION_COLLECTION_ID", ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.SESSION_ID.index).setCellValue( ConfigReader.getInstance().<String>readConfig("SESSION_ID", ConfigReader.SupportedTypes.STRING));
         row.createCell(COLUMNS.MEASUREMENT_PARAMETERS.index).setCellValue("NULL");
     }
 
@@ -118,12 +119,12 @@ public class RPVExcelReporter {
         row.createCell(COLUMNS.IMAGE_COMMENT.index).setCellValue("NULL");
         row.createCell(COLUMNS.IMAGE.index).setCellValue(stepRunInfo.screenshot.getAbsolutePath());
         row.createCell(COLUMNS.IN_ADO.index).setCellValue("NULL");
-        row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().readConfig("SYSTEM_NAME" ));
-        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().readConfig("SYSTEM_ID"));
+        row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_NAME" , ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_ID", ConfigReader.SupportedTypes.STRING));
         row.createCell(COLUMNS.RUN.index).setCellValue("NULL");
         row.createCell(COLUMNS.STATE.index).setCellValue("VALID");
-        row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().readConfig("SESSION_COLLECTION_ID"));
-        row.createCell(COLUMNS.SESSION_ID.index).setCellValue(ConfigReader.getInstance().readConfig("SESSION_ID"));
+        row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SESSION_COLLECTION_ID", ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.SESSION_ID.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SESSION_ID", ConfigReader.SupportedTypes.STRING));
         row.createCell(COLUMNS.MEASUREMENT_PARAMETERS.index).setCellValue("NULL");
     }
 
@@ -151,12 +152,13 @@ public class RPVExcelReporter {
         row.createCell(COLUMNS.IMAGE_COMMENT.index).setCellValue("NULL");
         row.createCell(COLUMNS.IMAGE.index).setCellValue("NULL");
         row.createCell(COLUMNS.IN_ADO.index).setCellValue("NULL");
-        row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().readConfig("SYSTEM_NAME" ));
-        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().readConfig("SYSTEM_ID"));
+        row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_NAME" , ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_ID", ConfigReader.SupportedTypes.STRING));
         row.createCell(COLUMNS.RUN.index).setCellValue("NULL");
         row.createCell(COLUMNS.STATE.index).setCellValue("VALID");
-        row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().readConfig("SESSION_COLLECTION_ID"));
-        row.createCell(COLUMNS.SESSION_ID.index).setCellValue(ConfigReader.getInstance().readConfig("SESSION_ID"));
+        row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SESSION_COLLECTION_ID", ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.SESSION_ID.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SESSION_ID", ConfigReader.SupportedTypes.STRING));
         row.createCell(COLUMNS.MEASUREMENT_PARAMETERS.index).setCellValue("NULL");
     }
+
 }
