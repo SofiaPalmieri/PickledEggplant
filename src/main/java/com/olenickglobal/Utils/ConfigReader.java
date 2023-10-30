@@ -21,24 +21,15 @@ public class ConfigReader {
     }
 
     public enum SupportedTypes implements JsonSupportedType {
-        STRING(String.class),
-        INTEGER(Integer.class),
-        BOOLEAN(Boolean.class),
-        DOUBLE(Double.class),
-        LONG(Long.class),
+        STRING,
+        INTEGER,
+        BOOLEAN,
+        DOUBLE,
+        LONG,
 
-        JSON_ARRAY(JSONArray.class),
-        JSON_OBJECT(JSONObject.class);
+        JSON_ARRAY,
+        JSON_OBJECT;
 
-        private final Class<?> associatedClass;
-
-        SupportedTypes(Class<?> associatedClass) {
-            this.associatedClass = associatedClass;
-        }
-
-        public Class<?> getAssociatedClass() {
-            return this.associatedClass;
-        }
     }
 
 
