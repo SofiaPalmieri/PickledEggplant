@@ -49,11 +49,11 @@ this.screen.wait(imageName,timeout).getTarget().hover();
     }
     @Override
     public void waitFor(Integer timeout) throws FindFailed {
-        this.screen.wait(imageName,timeout);
+        this.screen.wait(imageName,timeout * 1000);
     }
     @Override
     public Location getLocation(Integer timeout) throws FindFailed {
-        return this.screen.wait(imageName,timeout).getTarget();
+        return this.screen.wait(imageName,timeout * 1000).getTarget();
     }
     @Override
     public void dragTo(ScreenElement src,Integer timeout) throws FindFailed {

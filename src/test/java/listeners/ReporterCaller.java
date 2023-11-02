@@ -26,10 +26,13 @@ public class ReporterCaller {
 
     public void generateReports(TestCaseFinished event, TestResults testResults) {
         JSONArray sections = ConfigReader.getInstance().readConfig(ConfigReader.Configs.REPORTERS, ConfigReader.SupportedTypes.JSON_ARRAY);
-        sections.toList().forEach(object -> {
-            Reporter reporter = this.createReporter((JSONObject) object);
-            reporter.reportEvent(event,testResults);
-        });
+        for (int i = 0; i < sections.length(); i++){
+
+            JSONObject object = sections.getJSONObject(i);
+            Reporter reporter = this.createReporter(object);
+reporter.reportEvent(event,testResults);
+
+        }
     }
 }
 

@@ -14,6 +14,7 @@ import org.json.JSONObject;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
@@ -65,16 +66,18 @@ public class RPVExcelReporter implements Reporter {
         Workbook workbook = null;
         try {
             workbook = WorkbookFactory.create(new FileInputStream(file));
+            Sheet sheet = workbook.getSheetAt(0);
+
+            WriteFirstEntry(sheet,testRunInfo);
+            testRunInfo.steps.forEach((stepRunInfo) -> {
+                WriteStep(sheet,testRunInfo,stepRunInfo);
+            });
+            WriteLastEntry(sheet,testRunInfo);
+
+            workbook.write(new FileOutputStream(file));
         } catch (IOException e) {
             throw new OpeningExcelInReport(e);
         }
-        Sheet sheet = workbook.getSheetAt(0);
-
-        WriteFirstEntry(sheet,testRunInfo);
-        testRunInfo.steps.forEach((stepRunInfo) -> {
-            WriteStep(sheet,testRunInfo,stepRunInfo);
-        });
-        WriteLastEntry(sheet,testRunInfo);
 
     }
 
@@ -87,7 +90,7 @@ public class RPVExcelReporter implements Reporter {
         Row row = sheet.createRow(sheet.getLastRowNum() + 1);
         row.createCell(COLUMNS.START_TIME.index).setCellValue(testRunInfo.startTime.format(DATETIME_EXCEL_FORMATTER));
         row.createCell(COLUMNS.END_TIME.index).setCellValue(testRunInfo.startTime.format(DATETIME_EXCEL_FORMATTER));
-        row.createCell(COLUMNS.TEST_TIME_TYPE.index).setCellValue("Info");
+        row.createCell(COLUMNS.TEST_TIME_TYPE.index).setCellValue("TestCase");
         row.createCell(COLUMNS.APPLICATION.index).setCellValue(testRunInfo.application.getName());
         row.createCell(COLUMNS.TEST.index).setCellValue(testRunInfo.name);
         row.createCell(COLUMNS.RESULT.index).setCellValue(testRunInfo.getResult());
@@ -97,7 +100,7 @@ public class RPVExcelReporter implements Reporter {
         row.createCell(COLUMNS.IMAGE.index).setCellValue("NULL");
         row.createCell(COLUMNS.IN_ADO.index).setCellValue("NULL");
         row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_NAME" , ConfigReader.SupportedTypes.STRING));
-        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_ID", ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.WEBSITE.index).setCellValue("NULL");
         row.createCell(COLUMNS.RUN.index).setCellValue("NULL");
         row.createCell(COLUMNS.STATE.index).setCellValue("VALID");
         row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SESSION_COLLECTION_ID", ConfigReader.SupportedTypes.STRING));
@@ -120,7 +123,7 @@ public class RPVExcelReporter implements Reporter {
         row.createCell(COLUMNS.IMAGE.index).setCellValue(stepRunInfo.screenshot.getAbsolutePath());
         row.createCell(COLUMNS.IN_ADO.index).setCellValue("NULL");
         row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_NAME" , ConfigReader.SupportedTypes.STRING));
-        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_ID", ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.WEBSITE.index).setCellValue("NULL");
         row.createCell(COLUMNS.RUN.index).setCellValue("NULL");
         row.createCell(COLUMNS.STATE.index).setCellValue("VALID");
         row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SESSION_COLLECTION_ID", ConfigReader.SupportedTypes.STRING));
@@ -153,7 +156,7 @@ public class RPVExcelReporter implements Reporter {
         row.createCell(COLUMNS.IMAGE.index).setCellValue("NULL");
         row.createCell(COLUMNS.IN_ADO.index).setCellValue("NULL");
         row.createCell(COLUMNS.SYSTEM_NAME.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_NAME" , ConfigReader.SupportedTypes.STRING));
-        row.createCell(COLUMNS.WEBSITE.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SYSTEM_ID", ConfigReader.SupportedTypes.STRING));
+        row.createCell(COLUMNS.WEBSITE.index).setCellValue("NULL");
         row.createCell(COLUMNS.RUN.index).setCellValue("NULL");
         row.createCell(COLUMNS.STATE.index).setCellValue("VALID");
         row.createCell(COLUMNS.SESSION_COLLECTION_ID.index).setCellValue(ConfigReader.getInstance().<String>readConfig("SESSION_COLLECTION_ID", ConfigReader.SupportedTypes.STRING));

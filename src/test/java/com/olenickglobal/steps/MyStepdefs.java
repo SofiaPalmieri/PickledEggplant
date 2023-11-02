@@ -27,15 +27,17 @@ public class MyStepdefs implements ConcurrentEventListener {
         }
 
         @When("launch {string}")
-        public void launchApplication(String appName) throws  FindFailed {
-            ImageElement application = new ImageElement( appName+"Icon.png");
+        public void launchApplication(String appName) throws FindFailed, InterruptedException {
+            ImageElement application = new ImageElement( appName+"Icon");
+            application.waitFor(15);
             application.click(15);
         }
 
         @Then("{string} launches")
         public void applicationLaunches(String appName) throws FindFailed {
-            ImageElement application = new ImageElement(appName+"TaskBarIcon.png");
-            application.waitFor(10);
+            ImageElement application = new ImageElement(appName+"Taskbaricon");
+                application.waitFor(10);
+
     }
 
 

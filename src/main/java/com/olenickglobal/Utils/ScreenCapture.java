@@ -14,9 +14,10 @@ public record ScreenCapture(BufferedImage getImage) {
         String fullPath = ConfigReader.getInstance().getScreenshotName(name);
         File file = new File(fullPath);
         try {
+            file.createNewFile();
             ImageIO.write(this.getImage, "png", file);
-        } catch (IOException e) {
-            throw new SavingScreenCapture(e);
+        } catch (Throwable e) {
+            throw new SavingScreenCapture(name);
         }
         return file;
     }

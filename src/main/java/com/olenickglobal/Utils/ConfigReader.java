@@ -1,17 +1,17 @@
 package com.olenickglobal.Utils;
 
-import com.olenickglobal.Exceptions.FailureToAddRuntimeProperties;
+import com.olenickglobal.Exceptions.ConfigurationNotFound;
 import com.olenickglobal.Exceptions.FailureToAddStaticConfig;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.Tesseract;
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Properties;
 
 
@@ -106,11 +106,11 @@ public class ConfigReader {
     }
 
     public String getImageName(String imageName) {
-        return readConfig(Configs.IMAGES_PATH,SupportedTypes.STRING) + "/" + imageName;
+        return readConfig(Configs.IMAGES_PATH,SupportedTypes.STRING) + "\\" + imageName;
     }
 
     public String getScreenshotName(String screenshotName) {
-        return readConfig(Configs.SCREENSHOTS_PATH,SupportedTypes.STRING) + "/" + screenshotName;
+        return readConfig(Configs.SCREENSHOTS_PATH,SupportedTypes.STRING) + "\\" + screenshotName;
     }
 
     public enum Configs {
@@ -129,16 +129,22 @@ public class ConfigReader {
     }
 
     public <T> T readConfig(String config, SupportedTypes type){
-        return switch (type) {
-            case STRING -> (T) this.configurations.getString(config);
-            case INTEGER -> (T) (Integer) this.configurations.getInt(config);
-            case BOOLEAN -> (T) (Boolean) this.configurations.getBoolean(config);
-            case DOUBLE -> (T) (Double) this.configurations.getDouble(config);
-            case LONG -> (T) (Long) this.configurations.getLong(config);
-            case JSON_OBJECT -> (T) this.configurations.getJSONObject(config);
-            case JSON_ARRAY -> (T) this.configurations.getJSONArray(config);
-            default -> throw new UnsupportedTypeException();
-        };
+        try {
+            return switch (type) {
+                case STRING -> (T) this.configurations.getString(config);
+                case INTEGER -> (T) (Integer) this.configurations.getInt(config);
+                case BOOLEAN -> (T) (Boolean) this.configurations.getBoolean(config);
+                case DOUBLE -> (T) (Double) this.configurations.getDouble(config);
+                case LONG -> (T) (Long) this.configurations.getLong(config);
+                case JSON_OBJECT -> (T) this.configurations.getJSONObject(config);
+                case JSON_ARRAY -> (T) this.configurations.getJSONArray(config);
+                default -> throw new UnsupportedTypeException();
+            };
+        } catch (JSONException e) {
+
+            throw new ConfigurationNotFound(config);
+
+        }
     }
 
 

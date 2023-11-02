@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testng-results ignored="0" total="1" passed="1" failed="0" skipped="0">
+  <reporter-output>
+  </reporter-output>
+  <suite started-at="2023-11-02T17:02:47 ART" name="Cucumber Test Suite" finished-at="2023-11-02T17:02:53 ART" duration-ms="5395">
+    <groups>
+      <group name="cucumber">
+        <method signature="AbstractTestNGCucumberTests.runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@7e0b85f9]" name="runScenario" class="io.cucumber.testng.AbstractTestNGCucumberTests"/>
+      </group> <!-- cucumber -->
+    </groups>
+    <test started-at="2023-11-02T17:02:47 ART" name="Cucumber Test" finished-at="2023-11-02T17:02:53 ART" duration-ms="5395">
+      <class name="com.olenickglobal.TestNGCucumberTests">
+        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@7e0b85f9]" started-at="2023-11-02T17:02:47 ART" name="setUpClass" finished-at="2023-11-02T17:02:48 ART" duration-ms="314" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA[org.testng.TestRunner@6da9dc6]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- setUpClass -->
+        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@7e0b85f9]" started-at="2023-11-02T17:02:48 ART" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2023-11-02T17:02:53 ART" duration-ms="5018" status="PASS">
+          <params>
+            <param index="0">
+              <value>
+                <![CDATA["Launch "word""]]>
+              </value>
+            </param>
+            <param index="1">
+              <value>
+                <![CDATA["Application"]]>
+              </value>
+            </param>
+          </params>
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- runScenario -->
+        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:com.olenickglobal.TestNGCucumberTests@7e0b85f9]" started-at="2023-11-02T17:02:53 ART" name="tearDownClass" finished-at="2023-11-02T17:02:53 ART" duration-ms="4" status="PASS">
+          <reporter-output>
+          </reporter-output>
+        </test-method> <!-- tearDownClass -->
+      </class> <!-- com.olenickglobal.TestNGCucumberTests -->
+    </test> <!-- Cucumber Test -->
+  </suite> <!-- Cucumber Test Suite -->
+</testng-results>

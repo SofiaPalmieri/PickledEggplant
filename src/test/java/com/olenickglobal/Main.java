@@ -1,5 +1,6 @@
-package com.olenickglobal.Utils;
+package com.olenickglobal;
 
+import com.olenickglobal.Utils.ConfigReader;
 import org.json.JSONArray;
 import org.testng.TestNG;
 import org.testng.TestRunner;

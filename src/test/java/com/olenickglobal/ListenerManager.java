@@ -4,6 +4,7 @@ import com.olenickglobal.Utils.ConfigReader;
 import io.cucumber.plugin.ConcurrentEventListener;
 import io.cucumber.plugin.event.*;
 import listeners.*;
+import org.bouncycastle.util.test.TestFailedException;
 import org.testng.Reporter;
 
 import java.util.Arrays;
@@ -25,7 +26,7 @@ public class ListenerManager implements ConcurrentEventListener {
         eventPublisher.registerHandlerFor(TestStepFinished.class, (TestStepFinished event) -> {new StepManager().finalizeStep(event, testResults);});
         eventPublisher.registerHandlerFor(TestCaseFinished.class, (TestCaseFinished event) -> {new TestManager().finalizeTest(event,testResults);});
         eventPublisher.registerHandlerFor(TestCaseFinished.class, (TestCaseFinished event) -> {new ReporterCaller().generateReports(event, testResults);});
-    }
+       }
 
 
 

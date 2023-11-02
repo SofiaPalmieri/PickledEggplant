@@ -20,6 +20,10 @@ public class SUT {
 
     }
 
+    public void moveTo(int x,int y){
+        this.robot.mouseMove(x,y);
+    }
+
     public ScreenCapture getCroppedScreen(Rectangle rectangle) {
         ScreenCapture capture = this.getCurrentScreen();
         return capture.cropTo(rectangle);
@@ -27,8 +31,8 @@ public class SUT {
 
     public void typeText(String text) {
         for (char c : text.toCharArray()) {
-            this.robot.keyPress(c);
-            this.robot.keyRelease(c);
+            this.robot.keyPress(java.awt.event.KeyEvent.getExtendedKeyCodeForChar(c));
+            this.robot.keyRelease(java.awt.event.KeyEvent.getExtendedKeyCodeForChar(c));
         }
     }
 
