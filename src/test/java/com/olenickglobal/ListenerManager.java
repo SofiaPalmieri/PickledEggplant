@@ -26,7 +26,7 @@ public class ListenerManager implements ConcurrentEventListener {
         eventPublisher.registerHandlerFor(TestStepFinished.class, (TestStepFinished event) -> {new StepManager().finalizeStep(event, testResults);});
         eventPublisher.registerHandlerFor(TestCaseFinished.class, (TestCaseFinished event) -> {new TestManager().finalizeTest(event,testResults);});
         eventPublisher.registerHandlerFor(TestCaseFinished.class, (TestCaseFinished event) -> {new ReporterCaller().generateReports(event, testResults);});
-       }
+    }
 
 
 

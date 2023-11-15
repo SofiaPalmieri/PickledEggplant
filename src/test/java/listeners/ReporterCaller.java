@@ -17,8 +17,9 @@ public class ReporterCaller {
     Map<String, Class<? extends listeners.Reporter>> reporterClasses = Map.of("rpvexcel", RPVExcelReporter.class);
 
     public listeners.Reporter createReporter(JSONObject section) {
+
         try {
-            return reporterClasses.get(section.get("type")).getConstructor().newInstance().build(section);
+            return reporterClasses.get(section.get("type")).getConstructor(new Class<?>[]{JSONObject.class}).newInstance(section);
         } catch (Exception e) {
             throw new UnableToCreateReporter();
         }
@@ -30,7 +31,7 @@ public class ReporterCaller {
 
             JSONObject object = sections.getJSONObject(i);
             Reporter reporter = this.createReporter(object);
-reporter.reportEvent(event,testResults);
+            reporter.reportEvent(event,testResults);
 
         }
     }

@@ -4,11 +4,13 @@ import com.olenickglobal.TestResults;
 import io.cucumber.plugin.event.TestCaseFinished;
 import org.json.JSONObject;
 
-public interface Reporter {
+public abstract class Reporter {
 
-   void reportEvent(TestCaseFinished event, TestResults testResults);
+   public Reporter(JSONObject section){
 
-   Reporter build(JSONObject section);
+   }
+
+    public abstract void reportEvent(TestCaseFinished event, TestResults testResults);
 
 
 }

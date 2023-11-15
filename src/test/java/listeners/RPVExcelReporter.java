@@ -18,9 +18,17 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.time.format.DateTimeFormatter;
 
-public class RPVExcelReporter implements Reporter {
+public class RPVExcelReporter extends Reporter {
+
+    private final DateTimeFormatter DATETIME_EXCEL_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss:SSS");
+
+    private final File file = new File(ConfigReader.getInstance().<String>readConfig(ConfigReader.Configs.EXCEL_PATH, ConfigReader.SupportedTypes.STRING));
 
 
+    public RPVExcelReporter(JSONObject section) {
+        super(section);
+        // this.file = new File(section.getString("EXCEL_PATH"));
+    }
 
     public enum COLUMNS {
 
@@ -53,9 +61,6 @@ public class RPVExcelReporter implements Reporter {
     }
 
 
-    private final DateTimeFormatter DATETIME_EXCEL_FORMATTER = DateTimeFormatter.ofPattern("yyyy/MM/dd HH:mm:ss:SSS");
-
-    private final File file = new File(ConfigReader.getInstance().<String>readConfig(ConfigReader.Configs.EXCEL_PATH, ConfigReader.SupportedTypes.STRING));
 
     public void reportEvent(TestCaseFinished event, TestResults testResults) {
 
@@ -69,22 +74,20 @@ public class RPVExcelReporter implements Reporter {
             Sheet sheet = workbook.getSheetAt(0);
 
             WriteFirstEntry(sheet,testRunInfo);
+            final int[] index = {1};
             testRunInfo.steps.forEach((stepRunInfo) -> {
-                WriteStep(sheet,testRunInfo,stepRunInfo);
+                WriteStep(sheet,testRunInfo,stepRunInfo, index[0]);
+                index[0]++;
             });
             WriteLastEntry(sheet,testRunInfo);
 
             workbook.write(new FileOutputStream(file));
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new OpeningExcelInReport(e);
         }
 
     }
 
-    @Override
-    public Reporter build(JSONObject section) {
-        return this;
-    }
 
     private void WriteLastEntry(Sheet sheet, TestRunInfo testRunInfo) {
         Row row = sheet.createRow(sheet.getLastRowNum() + 1);
@@ -92,7 +95,7 @@ public class RPVExcelReporter implements Reporter {
         row.createCell(COLUMNS.END_TIME.index).setCellValue(testRunInfo.startTime.format(DATETIME_EXCEL_FORMATTER));
         row.createCell(COLUMNS.TEST_TIME_TYPE.index).setCellValue("TestCase");
         row.createCell(COLUMNS.APPLICATION.index).setCellValue(testRunInfo.application.getName());
-        row.createCell(COLUMNS.TEST.index).setCellValue(testRunInfo.name);
+        row.createCell(COLUMNS.TEST.index).setCellValue(testRunInfo.name + "_T1");
         row.createCell(COLUMNS.RESULT.index).setCellValue(testRunInfo.getResult());
         row.createCell(COLUMNS.VERSION.index).setCellValue(testRunInfo.application.getVersion());
         row.createCell(COLUMNS.EXPECTED.index).setCellValue(testRunInfo.expectedResult);
@@ -109,13 +112,13 @@ public class RPVExcelReporter implements Reporter {
     }
 
 
-    private void WriteStep(Sheet sheet, TestRunInfo testRunInfo, StepRunInfo stepRunInfo) {
+    private void WriteStep(Sheet sheet, TestRunInfo testRunInfo, StepRunInfo stepRunInfo, Integer index) {
         Row row = sheet.createRow(sheet.getLastRowNum() + 1);
         row.createCell(COLUMNS.START_TIME.index).setCellValue(stepRunInfo.startTime.format(DATETIME_EXCEL_FORMATTER));
         row.createCell(COLUMNS.END_TIME.index).setCellValue(stepRunInfo.endTime.format(DATETIME_EXCEL_FORMATTER));
         row.createCell(COLUMNS.TEST_TIME_TYPE.index).setCellValue("TestStep");
         row.createCell(COLUMNS.APPLICATION.index).setCellValue(testRunInfo.application.getName());
-        row.createCell(COLUMNS.TEST.index).setCellValue(testRunInfo.name);
+        row.createCell(COLUMNS.TEST.index).setCellValue(testRunInfo.name + "_S" + index);
         row.createCell(COLUMNS.RESULT.index).setCellValue(readResults(stepRunInfo.status));
         row.createCell(COLUMNS.VERSION.index).setCellValue(testRunInfo.application.getVersion());
         row.createCell(COLUMNS.EXPECTED.index).setCellValue(stepRunInfo.expectedResult);
@@ -148,7 +151,7 @@ public class RPVExcelReporter implements Reporter {
         row.createCell(COLUMNS.END_TIME.index).setCellValue(testRunInfo.startTime.format(DATETIME_EXCEL_FORMATTER));
         row.createCell(COLUMNS.TEST_TIME_TYPE.index).setCellValue("Info");
         row.createCell(COLUMNS.APPLICATION.index).setCellValue(testRunInfo.application.getName());
-        row.createCell(COLUMNS.TEST.index).setCellValue(testRunInfo.name);
+        row.createCell(COLUMNS.TEST.index).setCellValue(testRunInfo.name + "_I1");
         row.createCell(COLUMNS.RESULT.index).setCellValue("Pass");
         row.createCell(COLUMNS.VERSION.index).setCellValue(testRunInfo.application.getVersion());
         row.createCell(COLUMNS.EXPECTED.index).setCellValue(testRunInfo.expectedResult);
