@@ -1,0 +1,13 @@
+{
+    "IMAGES_PATH": "C:\\Users\\ielia\\dvlp\\PickledEggplant\\src\\test\\resources\\images",
+    "SCREENSHOTS_PATH": "C:\\Users\\ielia\\dvlp\\PickledEggplant",
+    "TESSERACT_DATA_PATH": "C:\\Users\\ielia\\Downloads",
+    "TESTNG_XML_FILE": "C:\\Users\\ielia\\dvlp\\PickledEggplant\\src\\test\\resources\\testng.xml",
+    "REPORTERS": [
+        {
+            "type": "rpvexcel",
+            "EXCEL_PATH": "C:\\Users\\ielia\\dvlp\\PickledEggplant\\test.xlsx"
+        }
+    ],
+    "EXCEL_PATH": "C:\\Users\\ielia\\dvlp\\PickledEggplant\\src\\test\\resources\\test.xlsx"
+}

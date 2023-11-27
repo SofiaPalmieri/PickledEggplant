@@ -1,4 +1,4 @@
-package com.olenickglobal.Exceptions;
+package com.olenickglobal.exceptions;
 
 public class SavingScreenCapture extends RuntimeException {
     public SavingScreenCapture(String image) {

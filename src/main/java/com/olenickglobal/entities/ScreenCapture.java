@@ -1,14 +1,17 @@
-package com.olenickglobal.Utils;
+package com.olenickglobal.entities;
 
-import com.olenickglobal.Exceptions.SavingScreenCapture;
+import com.olenickglobal.configuration.ConfigReader;
+import com.olenickglobal.exceptions.SavingScreenCapture;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
-import java.io.IOException;
 
 public record ScreenCapture(BufferedImage getImage) {
+    public ScreenCapture cropTo(Rectangle rectangle) {
+        return new ScreenCapture(this.getImage.getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
+    }
 
     public File saveFileAsScreenshot(String name) {
         String fullPath = ConfigReader.getInstance().getScreenshotName(name);
@@ -20,9 +23,5 @@ public record ScreenCapture(BufferedImage getImage) {
             throw new SavingScreenCapture(name);
         }
         return file;
-    }
-
-    public ScreenCapture cropTo(Rectangle rectangle) {
-        return new ScreenCapture(this.getImage.getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
     }
 }

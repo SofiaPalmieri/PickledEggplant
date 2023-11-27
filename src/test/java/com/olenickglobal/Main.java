@@ -1,15 +1,15 @@
 package com.olenickglobal;
 
-import com.olenickglobal.Utils.ConfigReader;
-import org.json.JSONArray;
+import com.olenickglobal.configuration.ConfigReader;
 import org.testng.TestNG;
-import org.testng.TestRunner;
 
-import java.io.*;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.Collections;
 
 public class Main {
-
     public static void main(String[] args) {
         ConfigReader configReader = ConfigReader.getInstance();
         String testNGXMLFile = configReader.readConfig(ConfigReader.Configs.TESTNG_XML_FILE, ConfigReader.SupportedTypes.STRING);
@@ -34,6 +34,4 @@ public class Main {
         }
         return features.toString();
     }
-
-
 }

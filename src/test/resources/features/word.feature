@@ -7,5 +7,5 @@ Feature: Application
     And launch <application>
     Then <application> launches
     Examples:
-      | application|
-      | "word"     |
+      | application |
+      | "word"      |
