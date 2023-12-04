@@ -4,6 +4,7 @@ import com.olenickglobal.exceptions.SUTRobot;
 
 import java.awt.*;
 
+// FIXME: Try to use Screen to access SikuliX instead of it directly.
 public class SUT {
     private final Robot robot;
 

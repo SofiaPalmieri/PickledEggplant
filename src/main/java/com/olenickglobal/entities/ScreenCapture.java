@@ -8,6 +8,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 
+// FIXME: ???
 public record ScreenCapture(BufferedImage getImage) {
     public ScreenCapture cropTo(Rectangle rectangle) {
         return new ScreenCapture(this.getImage.getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height));

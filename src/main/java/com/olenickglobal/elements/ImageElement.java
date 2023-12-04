@@ -1,67 +1,36 @@
 package com.olenickglobal.elements;
 
 import com.olenickglobal.configuration.ConfigReader;
-import org.sikuli.script.FindFailed;
-import org.sikuli.script.Location;
-import org.sikuli.script.Screen;
+import com.olenickglobal.entities.Screen;
+import com.olenickglobal.exceptions.ElementNotFoundException;
+import com.olenickglobal.exceptions.ImageNotFoundException;
 
-public class ImageElement implements ScreenElement {
-    private final String imageName;
-    private final Screen screen;
+import java.awt.*;
 
+public class ImageElement extends ScreenElement {
+    protected final String imageName;
+
+    /**
+     * Image element with the default target at the geometrical center of the element.
+     * @param imageName Image name, either filename or directory name.
+     */
     public ImageElement(String imageName) {
-        this.imageName = this.getFullImagePath(imageName);
-        this.screen = new Screen();
+        this(imageName, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    public ImageElement(String imageName, Offset offset) {
+        // TODO: Different screens? Inner rectangles? Parent element?
+        super(new Screen(), offset);
+        // TODO: Check if we need to do this in a different way.
+        this.imageName = ConfigReader.getInstance().getImageName(imageName);
     }
 
     @Override
-    public void click(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout).getTarget().click();
-    }
-
-    @Override
-    public void doubleClick(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout).getTarget().doubleClick();
-    }
-
-    @Override
-    public void dragTo(ScreenElement src, double timeout) throws FindFailed {
-        Location targetLocation = src.getLocation(timeout);
-        Location destinationLocation = this.getLocation(timeout);
-        this.screen.dragDrop(targetLocation, destinationLocation);
-    }
-
-    public String getFullImagePath(String imageName) {
-        return ConfigReader.getInstance().getImageName(imageName);
-    }
-
-    @Override
-    public Location getLocation(double timeout) throws FindFailed {
-        return this.screen.wait(imageName, timeout).getTarget();
-    }
-
-    @Override
-    public Boolean isFound(double timeout) {
+    protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
         try {
-            this.screen.wait(imageName, timeout);
-            return true;
-        } catch (FindFailed findFailed) {
-            return false;
+            return screen.findImage(timeout, imageName);
+        } catch (ImageNotFoundException e) {
+            throw new ElementNotFoundException(e);
         }
-    }
-
-    @Override
-    public void moveTo(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout).getTarget().hover();
-    }
-
-    @Override
-    public void rightClick(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout).getTarget().rightClick();
-    }
-
-    @Override
-    public void waitFor(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout * 1000);
     }
 }
