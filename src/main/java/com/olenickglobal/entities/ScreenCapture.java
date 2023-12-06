@@ -9,9 +9,9 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 
 // FIXME: ???
-public record ScreenCapture(BufferedImage getImage) {
+public record ScreenCapture(BufferedImage image) {
     public ScreenCapture cropTo(Rectangle rectangle) {
-        return new ScreenCapture(this.getImage.getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
+        return new ScreenCapture(this.image.getSubimage(rectangle.x, rectangle.y, rectangle.width, rectangle.height));
     }
 
     public File saveFileAsScreenshot(String name) {
@@ -19,7 +19,7 @@ public record ScreenCapture(BufferedImage getImage) {
         File file = new File(fullPath);
         try {
             file.createNewFile();
-            ImageIO.write(this.getImage, "png", file);
+            ImageIO.write(this.image, "png", file);
         } catch (Throwable e) {
             throw new SavingScreenCapture(name);
         }

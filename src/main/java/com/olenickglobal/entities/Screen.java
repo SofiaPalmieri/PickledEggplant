@@ -1,12 +1,20 @@
 package com.olenickglobal.entities;
 
+import com.olenickglobal.configuration.ConfigReader;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 import com.olenickglobal.exceptions.InteractionFailedException;
 import com.olenickglobal.exceptions.NotImplementedYetError;
+import com.olenickglobal.exceptions.OCRException;
+import com.olenickglobal.exceptions.TextNotFoundException;
+import net.sourceforge.tess4j.ITessAPI;
+import net.sourceforge.tess4j.ITesseract;
+import net.sourceforge.tess4j.TesseractException;
+import net.sourceforge.tess4j.Word;
 import org.sikuli.basics.Settings;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.Location;
 import org.sikuli.script.Match;
+import org.sikuli.script.Pattern;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -30,6 +38,10 @@ import java.util.List;
  */
 
 public class Screen {
+    private static final long OCR_POLLING_TIME_MS = 10;
+    private static final long OCR_POLLING_TIME_NS = OCR_POLLING_TIME_MS * 1_000_000;
+    private static final double SEARCH_SCALE_FACTOR = 5.0;
+
     @FunctionalInterface
     private interface BiFunctionWithFF<T, U, V> {
         V apply(T t, U u) throws FindFailed;
@@ -113,9 +125,9 @@ public class Screen {
         return sikuliXScreen.getBounds();
     }
 
-    public Rectangle findImage(double timeout, BufferedImage image) throws ImageNotFoundException {
+    public Rectangle findImage(double timeout, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
         try {
-            Match match = sikuliXScreen.wait(image, timeout);
+            Match match = sikuliXScreen.wait(asPattern(image, minSimilarity), timeout);
             if (!match.isValid()) {
                 throw new ImageNotFoundException("Unable to find image: Match invalid.");
             }
@@ -131,7 +143,7 @@ public class Screen {
         }
     }
 
-    public Rectangle findImage(double timeout, String path) throws ImageNotFoundException {
+    public Rectangle findImage(double timeout, String path, double minSimilarity) throws ImageNotFoundException {
         try {
             Match match;
             File file = new File(path);
@@ -144,14 +156,15 @@ public class Screen {
                     throw new ImageNotFoundException("Directory '" + path + "' is empty.");
                 }
                 // TODO: Filter for actual images.
-                List<Object> imageFiles = Arrays.stream(files).filter(File::isFile).filter(File::canRead).map(f -> (Object) f.getAbsolutePath()).toList();
+                List<Object> imageFiles = Arrays.stream(files).filter(File::isFile).filter(File::canRead)
+                        .map(f -> (Object) asPattern(f, minSimilarity)).toList();
+                        // .map(f -> (Object) f.getAbsolutePath()).toList();
                 if (imageFiles.isEmpty()) {
                     throw new ImageNotFoundException("Directory '" + path + "' does not contain any images.");
                 }
-                // TODO: Check if this should be "Best" or "Any" and then a filter to get the first.
                 match = sikuliXScreen.waitBestList(timeout, imageFiles);
             } else {
-                match = sikuliXScreen.wait(file.getAbsolutePath(), timeout);
+                match = sikuliXScreen.wait(asPattern(file, minSimilarity), timeout);
             }
             if (!match.isValid()) {
                 throw new ImageNotFoundException("Unable to find '" + path + "': Match invalid.");
@@ -166,6 +179,45 @@ public class Screen {
             }
             throw e;
         }
+    }
+
+    @SuppressWarnings("BusyWait") // No point of using wait-notify here.
+    public Rectangle findText(double timeout, String text) {
+        // TODO: Check if this can be done more accurately.
+        boolean found = false;
+        List<String> words = List.of(text.split(" "));
+        long timeoutNanos = System.nanoTime() + (long)(timeout * 1000_000_000);
+        do {
+            BufferedImage fullScreen = this.captureFullScreen();
+            ITesseract tesseract = ConfigReader.getInstance().getTesseract();
+            List<Word> ocrWords = tesseract.getWords(fullScreen, ITessAPI.TessPageIteratorLevel.RIL_WORD);
+            Rectangle rect = getTextMatch(null, words, ocrWords);
+            if (rect != null) {
+                return rect;
+            }
+            if (System.nanoTime() - timeoutNanos > OCR_POLLING_TIME_NS) {
+                try {
+                    Thread.sleep(OCR_POLLING_TIME_MS);
+                } catch (InterruptedException ignore) {
+                }
+            }
+        } while (!found && System.nanoTime() < timeoutNanos);
+        throw new TextNotFoundException(text);
+    }
+
+    public String getText() {
+        return getText(getBounds());
+    }
+
+    public String getText(Rectangle rectangle) throws OCRException {
+        ITesseract tesseract = ConfigReader.getInstance().getTesseract();
+        String text;
+        try {
+            text = tesseract.doOCR(capture(rectangle));
+        } catch (TesseractException e) {
+            throw new OCRException(e);
+        }
+        return text;
     }
 
     public void hover(Point target, int modifiers) throws InteractionFailedException {
@@ -244,6 +296,44 @@ public class Screen {
         return sikuliXScreen.getIDString();
     }
     */
+
+    private Pattern asPattern(BufferedImage image, double minSimilarity) {
+        Pattern pattern = new Pattern(image);
+        pattern.similar(minSimilarity);
+        return pattern;
+    }
+
+    private Pattern asPattern(File image, double minSimilarity) {
+        Pattern pattern = new Pattern(image.getAbsolutePath());
+        pattern.similar(minSimilarity);
+        return pattern;
+    }
+
+    protected Rectangle getTextMatch(Rectangle startingRect, List<String> words, List<Word> ocrWords) {
+        // TODO: Check this method out.
+        if (words.isEmpty()) {
+            return startingRect;
+        }
+        String word = words.get(0);
+        List<Word> matches = ocrWords.stream().filter((Word w) -> w.getText().toLowerCase().contains(word.toLowerCase())).toList();
+        for (Word match : matches) {
+            if (startingRect == null) {
+                Rectangle boundingRectangle = getTextMatch(match.getBoundingBox(), words.subList(1, words.size()), ocrWords);
+                if (boundingRectangle != null) {
+                    return boundingRectangle;
+                }
+            } else {
+                Rectangle matchRectangle = match.getBoundingBox();
+                if (Math.sqrt(Math.pow(startingRect.x + startingRect.width - matchRectangle.x, 2) + Math.pow(startingRect.y + startingRect.height - matchRectangle.y, 2)) / (matchRectangle.height) < SEARCH_SCALE_FACTOR) {
+                    return getTextMatch(
+                            new Rectangle(startingRect.x, startingRect.y, matchRectangle.x - startingRect.x + matchRectangle.width, matchRectangle.y - startingRect.y + matchRectangle.height),
+                            words.subList(1, words.size()),
+                            ocrWords);
+                }
+            }
+        }
+        return null;
+    }
 
     private void linger(double lingerTime) {
         try {
