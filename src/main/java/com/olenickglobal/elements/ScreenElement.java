@@ -496,6 +496,14 @@ public abstract class ScreenElement {
     }
 
     /**
+     * Get the flag for using cached parent location.
+     * @return Flag.
+     */
+    public boolean isUsingCachedParentLocation() {
+        return useCachedParentLocation;
+    }
+
+    /**
      * Checks if element is displayed on the screen.
      * @param timeout Search timeout in seconds.
      * @return true if visible, false otherwise.
@@ -646,7 +654,8 @@ public abstract class ScreenElement {
             return null;
         }
         Rectangle lastParentLocation = parent.getLastMatchLocation();
-        return useCachedParentLocation && lastParentLocation != null ? lastParentLocation : parent.getMatch(timeout);
+        // TODO: See if it would make sense to check the elapsed time and reduce the timeout at the calling methods.
+        return isUsingCachedParentLocation() && lastParentLocation != null ? lastParentLocation : parent.getMatch(timeout);
     }
 
     /**
