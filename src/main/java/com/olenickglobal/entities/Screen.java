@@ -15,6 +15,7 @@ import org.sikuli.script.FindFailed;
 import org.sikuli.script.Location;
 import org.sikuli.script.Match;
 import org.sikuli.script.Pattern;
+import org.sikuli.script.Region;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -38,16 +39,16 @@ import java.util.List;
  */
 
 public class Screen {
-    private static final long OCR_POLLING_TIME_MS = 10;
-    private static final long OCR_POLLING_TIME_NS = OCR_POLLING_TIME_MS * 1_000_000;
-    private static final double SEARCH_SCALE_FACTOR = 5.0;
+    protected static final long OCR_POLLING_TIME_MS = 10;
+    protected static final long OCR_POLLING_TIME_NS = OCR_POLLING_TIME_MS * 1_000_000;
+    protected static final double SEARCH_SCALE_FACTOR = 5.0;
 
     @FunctionalInterface
-    private interface BiFunctionWithFF<T, U, V> {
+    protected interface BiFunctionWithFF<T, U, V> {
         V apply(T t, U u) throws FindFailed;
     }
 
-    private final org.sikuli.script.Screen sikuliXScreen;
+    protected final org.sikuli.script.Screen sikuliXScreen;
 
     public Screen() {
         // TODO: Allow for different screens and unions.
@@ -126,8 +127,12 @@ public class Screen {
     }
 
     public Rectangle findImage(double timeout, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
+        return findImage(timeout, null, image, minSimilarity);
+    }
+
+    public Rectangle findImage(double timeout, Rectangle area, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
         try {
-            Match match = sikuliXScreen.wait(asPattern(image, minSimilarity), timeout);
+            Match match = getRegion(area).wait(asPattern(image, minSimilarity), timeout);
             if (!match.isValid()) {
                 throw new ImageNotFoundException("Unable to find image: Match invalid.");
             }
@@ -144,12 +149,17 @@ public class Screen {
     }
 
     public Rectangle findImage(double timeout, String path, double minSimilarity) throws ImageNotFoundException {
+        return findImage(timeout, null, path, minSimilarity);
+    }
+
+    public Rectangle findImage(double timeout, Rectangle area, String path, double minSimilarity) throws ImageNotFoundException {
         try {
             Match match;
             File file = new File(path);
             if (!file.exists()) {
                 throw new ImageNotFoundException("File '" + path + "' does not exist.");
             }
+            Region region = getRegion(area);
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
                 if (files == null || files.length == 0) {
@@ -158,13 +168,12 @@ public class Screen {
                 // TODO: Filter for actual images.
                 List<Object> imageFiles = Arrays.stream(files).filter(File::isFile).filter(File::canRead)
                         .map(f -> (Object) asPattern(f, minSimilarity)).toList();
-                        // .map(f -> (Object) f.getAbsolutePath()).toList();
                 if (imageFiles.isEmpty()) {
                     throw new ImageNotFoundException("Directory '" + path + "' does not contain any images.");
                 }
-                match = sikuliXScreen.waitBestList(timeout, imageFiles);
+                match = region.waitBestList(timeout, imageFiles);
             } else {
-                match = sikuliXScreen.wait(asPattern(file, minSimilarity), timeout);
+                match = region.wait(asPattern(file, minSimilarity), timeout);
             }
             if (!match.isValid()) {
                 throw new ImageNotFoundException("Unable to find '" + path + "': Match invalid.");
@@ -181,14 +190,19 @@ public class Screen {
         }
     }
 
-    @SuppressWarnings("BusyWait") // No point of using wait-notify here.
     public Rectangle findText(double timeout, String text) {
+        return findText(timeout, null, text);
+    }
+
+    @SuppressWarnings("BusyWait") // No point of using wait-notify here.
+    public Rectangle findText(double timeout, Rectangle area, String text) {
         // TODO: Check if this can be done more accurately.
         boolean found = false;
         List<String> words = List.of(text.split(" "));
         long timeoutNanos = System.nanoTime() + (long)(timeout * 1000_000_000);
+        Rectangle searchArea = area == null ? getBounds() : area;
         do {
-            BufferedImage fullScreen = this.captureFullScreen();
+            BufferedImage fullScreen = capture(searchArea);
             ITesseract tesseract = ConfigReader.getInstance().getTesseract();
             List<Word> ocrWords = tesseract.getWords(fullScreen, ITessAPI.TessPageIteratorLevel.RIL_WORD);
             Rectangle rect = getTextMatch(null, words, ocrWords);
@@ -297,16 +311,20 @@ public class Screen {
     }
     */
 
-    private Pattern asPattern(BufferedImage image, double minSimilarity) {
+    protected Pattern asPattern(BufferedImage image, double minSimilarity) {
         Pattern pattern = new Pattern(image);
         pattern.similar(minSimilarity);
         return pattern;
     }
 
-    private Pattern asPattern(File image, double minSimilarity) {
+    protected Pattern asPattern(File image, double minSimilarity) {
         Pattern pattern = new Pattern(image.getAbsolutePath());
         pattern.similar(minSimilarity);
         return pattern;
+    }
+
+    protected Region getRegion(Rectangle area) {
+        return area == null ? sikuliXScreen : new Region(area.x, area.y, area.width, area.height, sikuliXScreen);
     }
 
     protected Rectangle getTextMatch(Rectangle startingRect, List<String> words, List<Word> ocrWords) {
@@ -335,7 +353,7 @@ public class Screen {
         return null;
     }
 
-    private void linger(double lingerTime) {
+    protected void linger(double lingerTime) {
         try {
             Thread.sleep((long) (lingerTime * 1000));
         } catch (InterruptedException e) {
@@ -344,7 +362,7 @@ public class Screen {
         }
     }
 
-    private void performDelayedClickAction(BiFunctionWithFF<Location, Integer, Integer> method, Point target, int modifiers, double delay) throws InteractionFailedException {
+    protected void performDelayedClickAction(BiFunctionWithFF<Location, Integer, Integer> method, Point target, int modifiers, double delay) throws InteractionFailedException {
         try {
             // Settings.ClickDelay: Delay between the mouse down and up in seconds as 0.nnn. This only applies to the next click action and is then reset to 0 again. A value > 1 is cut to 1.0 (max delay of 1 second).
             Settings.ClickDelay = delay;

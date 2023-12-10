@@ -3,11 +3,6 @@ package com.olenickglobal.elements;
 import com.olenickglobal.entities.Screen;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
-import com.olenickglobal.exceptions.OCRException;
-import com.olenickglobal.configuration.ConfigReader;
-import com.olenickglobal.entities.ScreenCapture;
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.TesseractException;
 
 import java.awt.*;
 
@@ -19,26 +14,28 @@ public class TextElement extends ScreenElement {
     }
 
     public TextElement(String text, Offset offset) {
-        // TODO: Different screens? Inner rectangles? Parent element?
+        // TODO: Different screens?
         super(new Screen(), offset);
         this.text = text;
     }
 
-    // FIXME: ???
-    public TextElement(ScreenCapture capture) {
-        super(new Screen(), new FixedOffset(Alignment.CENTER, 0, 0));
-        ITesseract tesseract = ConfigReader.getInstance().getTesseract();
-        try {
-            this.text = tesseract.doOCR(capture.image());
-        } catch (TesseractException e) {
-            throw new OCRException(e);
-        }
+    public TextElement(ScreenElement parent, String text) {
+        this(text, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    public TextElement(ScreenElement parent, String text, Offset offset) {
+        // TODO: Different screens?
+        super(new Screen(), parent, offset);
+        this.text = text;
     }
 
     @Override
     protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
         try {
-            return screen.findText(timeout, text);
+            Rectangle area = getParentBoundingRectangle(timeout);
+            Rectangle rectangle = screen.findText(timeout, area, text);
+            setLastMatchLocation(rectangle);
+            return rectangle;
         } catch (ImageNotFoundException e) {
             throw new ElementNotFoundException(e);
         }

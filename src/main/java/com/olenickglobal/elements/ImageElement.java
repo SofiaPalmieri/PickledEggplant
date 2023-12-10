@@ -25,17 +25,45 @@ public class ImageElement extends ScreenElement {
      * Image element with the default target at the geometrical center of the element.
      * @param imageName Image name, either filename or directory name.
      */
+    public ImageElement(ScreenElement parent, String imageName) {
+        this(parent, imageName, DEFAULT_MIN_IMAGE_SIMILARITY, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    /**
+     * Image element with the default target at the geometrical center of the element.
+     * @param imageName Image name, either filename or directory name.
+     */
     public ImageElement(String imageName, double minSimilarity) {
         this(imageName, minSimilarity, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    /**
+     * Image element with the default target at the geometrical center of the element.
+     * @param imageName Image name, either filename or directory name.
+     */
+    public ImageElement(ScreenElement parent, String imageName, double minSimilarity) {
+        this(parent, imageName, minSimilarity, new FixedOffset(Alignment.CENTER, 0, 0));
     }
 
     public ImageElement(String imageName, Offset offset) {
         this(imageName, DEFAULT_MIN_IMAGE_SIMILARITY, offset);
     }
 
+    public ImageElement(ScreenElement parent, String imageName, Offset offset) {
+        this(parent, imageName, DEFAULT_MIN_IMAGE_SIMILARITY, offset);
+    }
+
     public ImageElement(String imageName, double minSimilarity, Offset offset) {
-        // TODO: Different screens? Inner rectangles? Parent element?
+        // TODO: Different screens?
         super(new Screen(), offset);
+        // TODO: Check if we need to do this in a different way.
+        this.imageName = ConfigReader.getInstance().getImageName(imageName);
+        this.minSimilarity = minSimilarity;
+    }
+
+    public ImageElement(ScreenElement parent, String imageName, double minSimilarity, Offset offset) {
+        // TODO: Different screens?
+        super(new Screen(), parent, offset);
         // TODO: Check if we need to do this in a different way.
         this.imageName = ConfigReader.getInstance().getImageName(imageName);
         this.minSimilarity = minSimilarity;
@@ -44,7 +72,8 @@ public class ImageElement extends ScreenElement {
     @Override
     protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
         try {
-            return screen.findImage(timeout, imageName, minSimilarity);
+            Rectangle area = getParentBoundingRectangle(timeout);
+            return screen.findImage(timeout, area, imageName, minSimilarity);
         } catch (ImageNotFoundException e) {
             throw new ElementNotFoundException(e);
         }

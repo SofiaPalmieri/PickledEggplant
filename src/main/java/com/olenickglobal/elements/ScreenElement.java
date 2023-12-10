@@ -6,25 +6,46 @@ import com.olenickglobal.exceptions.ImageNotFoundException;
 import com.olenickglobal.exceptions.InteractionFailedException;
 
 import java.awt.*;
+import java.awt.image.BufferedImage;
 
 public abstract class ScreenElement {
     protected final Screen screen;
 
+    protected ScreenElement parent;
     protected Offset offset;
+    protected Rectangle lastMatchLocation;
+    protected boolean useCachedParentLocation = true;
 
     public ScreenElement(Screen screen, Offset offset) {
+        this(screen, null, offset);
+    }
+
+    public ScreenElement(Screen screen, ScreenElement parent, Offset offset) {
         this.screen = screen;
+        this.parent = parent;
         this.offset = offset;
     }
 
     /**
      * Gets a region match.
+     * <p><b>IMPORTANT FOR IMPLEMENTORS:</b> This method will need to use {@link #getLastMatchLocation} and
+     * {@link #setLastMatchLocation} methods appropriately.</p>
      * @param timeout Search timeout in seconds.
      * @return Screen rectangle where the match was found.
      * @throws ElementNotFoundException when element cannot be located on the screen.
      */
     // TODO: Caching policy?
     abstract Rectangle getMatch(double timeout) throws ElementNotFoundException;
+
+    /**
+     * Captures the element's rectangle from the screen.
+     * @param timeout Search timeout in seconds.
+     * @return Captured buffered image.
+     * @throws ElementNotFoundException when element cannot be located on the screen.
+     */
+    public BufferedImage capture(double timeout) throws ElementNotFoundException {
+        return screen.capture(getMatch(timeout));
+    }
 
     /**
      * Clicks the location of this element.
@@ -334,6 +355,14 @@ public abstract class ScreenElement {
     }
 
     /**
+     * Get parent element.
+     * @return Parent element or null.
+     */
+    public ScreenElement getParent() {
+        return parent;
+    }
+
+    /**
      * Get the target point of this element (usually its center point, see {@link #getOffset} and {@link #setOffset}).
      * @param timeout Search timeout in seconds.
      * @return Target point, specified by this element's rectangle and the configured offset.
@@ -356,6 +385,16 @@ public abstract class ScreenElement {
         } catch (ImageNotFoundException e) {
             throw new ElementNotFoundException(e);
         }
+    }
+
+    /**
+     * Get the text in the element's rectangle on the screen.
+     * @param timeout Search timeout in seconds.
+     * @return OCRed text.
+     * @throws ElementNotFoundException when element cannot be located on the screen.
+     */
+    public String getText(double timeout) throws ElementNotFoundException {
+        return screen.getText(getMatch(timeout));
     }
 
     /**
@@ -549,12 +588,32 @@ public abstract class ScreenElement {
     }
 
     /**
+     * Get parent element.
+     * @param parent Parent element or null.
+     * @return This element.
+     */
+    public ScreenElement setParent(ScreenElement parent) {
+        this.parent = parent;
+        return this;
+    }
+
+    /**
      * Set offset specification.
      * @param offset Offset specification.
      * @return This element.
      */
     public ScreenElement setOffset(Offset offset) {
         this.offset = offset;
+        return this;
+    }
+
+    /**
+     * Set the flag for using cached parent location.
+     * @param useCache Flag.
+     * @return This element.
+     */
+    public ScreenElement setUsingCachedParentLocation(boolean useCache) {
+        useCachedParentLocation = useCache;
         return this;
     }
 
@@ -566,6 +625,36 @@ public abstract class ScreenElement {
      */
     public ScreenElement waitFor(double timeout) throws ElementNotFoundException {
         getMatch(timeout);
+        return this;
+    }
+
+    /**
+     * Get the last match rectangle.
+     * @return Screen rectangle where the match was last found, or null if it has never been found.
+     */
+    protected Rectangle getLastMatchLocation() {
+        return lastMatchLocation;
+    }
+
+    /**
+     * Get parent bounding rectangle.
+     * @param timeout Search timeout in seconds.
+     * @return Parent bounding rectangle, or null if no parent.
+     */
+    protected Rectangle getParentBoundingRectangle(double timeout) {
+        if (parent == null) {
+            return null;
+        }
+        Rectangle lastParentLocation = parent.getLastMatchLocation();
+        return useCachedParentLocation && lastParentLocation != null ? lastParentLocation : parent.getMatch(timeout);
+    }
+
+    /**
+     * Set the last matching rectangle.
+     * @return This element.
+     */
+    protected ScreenElement setLastMatchLocation(Rectangle rectangle) {
+        lastMatchLocation = rectangle;
         return this;
     }
 }
