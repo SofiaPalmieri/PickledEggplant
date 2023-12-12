@@ -1,6 +1,7 @@
 package com.olenickglobal.entities;
 
 import com.olenickglobal.configuration.ConfigReader;
+import com.olenickglobal.elements.RectangleElement;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 import com.olenickglobal.exceptions.InteractionFailedException;
 import com.olenickglobal.exceptions.NotImplementedYetError;
@@ -234,6 +235,10 @@ public class Screen {
         return text;
     }
 
+    public void hover(Point target) throws InteractionFailedException {
+        hover(target, 0);
+    }
+
     public void hover(Point target, int modifiers) throws InteractionFailedException {
         hover(target, modifiers, 0.0);
     }
@@ -247,6 +252,14 @@ public class Screen {
             // TODO: This should never happen. See what to do with this exception.
             throw new RuntimeException(e);
         }
+    }
+
+    public RectangleElement interactivelyCreateElement() {
+        return new RectangleElement(interactivelySelectRegion("Click and drag to select region of interaction"), true);
+    }
+
+    public Rectangle interactivelySelectRegion(String selectionMessage) {
+        return sikuliXScreen.selectRegion(selectionMessage).getRect();
     }
 
     public void rightClick(Point target) {

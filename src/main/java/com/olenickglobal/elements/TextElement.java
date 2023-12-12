@@ -20,7 +20,7 @@ public class TextElement extends ScreenElement {
     }
 
     public TextElement(ScreenElement parent, String text) {
-        this(text, new FixedOffset(Alignment.CENTER, 0, 0));
+        this(parent, text, new FixedOffset(Alignment.CENTER, 0, 0));
     }
 
     public TextElement(ScreenElement parent, String text, Offset offset) {

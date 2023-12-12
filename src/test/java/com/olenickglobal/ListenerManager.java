@@ -6,10 +6,10 @@ import io.cucumber.plugin.event.TestCaseFinished;
 import io.cucumber.plugin.event.TestCaseStarted;
 import io.cucumber.plugin.event.TestStepFinished;
 import io.cucumber.plugin.event.TestStepStarted;
-import listeners.ReporterCaller;
-import listeners.ScreenshotCapturer;
-import listeners.StepManager;
-import listeners.TestManager;
+import com.olenickglobal.listeners.ReporterCaller;
+import com.olenickglobal.listeners.ScreenshotCapturer;
+import com.olenickglobal.listeners.StepManager;
+import com.olenickglobal.listeners.TestManager;
 
 public class ListenerManager implements ConcurrentEventListener {
     private static final TestResults testResults = new TestResults();

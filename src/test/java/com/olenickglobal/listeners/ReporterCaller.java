@@ -1,4 +1,4 @@
-package listeners;
+package com.olenickglobal.listeners;
 
 import com.olenickglobal.TestResults;
 import com.olenickglobal.configuration.ConfigReader;
@@ -10,9 +10,9 @@ import org.json.JSONObject;
 import java.util.Map;
 
 public class ReporterCaller {
-    Map<String, Class<? extends listeners.Reporter>> reporterClasses = Map.of("rpvexcel", RPVExcelReporter.class);
+    Map<String, Class<? extends Reporter>> reporterClasses = Map.of("rpvexcel", RPVExcelReporter.class);
 
-    public listeners.Reporter createReporter(JSONObject section) {
+    public Reporter createReporter(JSONObject section) {
         try {
             return reporterClasses.get(section.get("type")).getConstructor(new Class<?>[]{JSONObject.class}).newInstance(section);
         } catch (Exception e) {

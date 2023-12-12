@@ -1,4 +1,4 @@
-package listeners;
+package com.olenickglobal.listeners;
 
 import com.olenickglobal.TestResults;
 import com.olenickglobal.entities.SUT;
@@ -20,6 +20,7 @@ public class ScreenshotCapturer {
     }
 
     public File getScreenshot(TestStepFinished event) {
+        // TODO: Change this so that it uses the Screen instance in the SUT.
         String localDateTime = LocalDateTime.now().format(FILENAME_FORMATTER);
         String fileName = ((PickleStepTestStep) event.getTestStep()).getStep().getText().replaceAll("[\\s,.:;]", "_").replaceAll("[^0-9A-Za-z_]", "") + localDateTime + ".jpg";
         return sut.getCurrentScreen().saveFileAsScreenshot(fileName);
