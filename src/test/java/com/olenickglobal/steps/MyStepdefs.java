@@ -12,8 +12,10 @@ import io.cucumber.plugin.event.EventPublisher;
 
 public class MyStepdefs implements ConcurrentEventListener {
     private final ScreenElement mainParent;
+    private final SUT sut;
 
     public MyStepdefs(SUT sut) {
+        this.sut = sut;
         mainParent = sut.getMainParentElement();
     }
 
@@ -38,7 +40,6 @@ public class MyStepdefs implements ConcurrentEventListener {
 
     @When("search for {string}")
     public void searchForApplication(String appName) throws ElementNotFoundException, InteractionFailedException {
-        SUT sut = new SUT();
         sut.typeText(appName);
     }
 

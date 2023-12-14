@@ -44,6 +44,11 @@ public class Screen {
     protected static final long OCR_POLLING_TIME_NS = OCR_POLLING_TIME_MS * 1_000_000;
     protected static final double SEARCH_SCALE_FACTOR = 5.0;
 
+    // TODO: See if we should move this somewhere safer.
+    static {
+        System.setProperty("sun.java2d.uiScale.enabled", "false");
+    }
+
     @FunctionalInterface
     protected interface BiFunctionWithFF<T, U, V> {
         V apply(T t, U u) throws FindFailed;

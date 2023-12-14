@@ -347,6 +347,14 @@ public abstract class ScreenElement {
     }
 
     /**
+     * Get the last match rectangle.
+     * @return Screen rectangle where the match was last found, or null if it has never been found.
+     */
+    public Rectangle getLastMatchLocation() {
+        return lastMatchLocation;
+    }
+
+    /**
      * Get offset specification.
      * @return Offset specification.
      */
@@ -634,14 +642,6 @@ public abstract class ScreenElement {
     public ScreenElement waitFor(double timeout) throws ElementNotFoundException {
         getMatch(timeout);
         return this;
-    }
-
-    /**
-     * Get the last match rectangle.
-     * @return Screen rectangle where the match was last found, or null if it has never been found.
-     */
-    protected Rectangle getLastMatchLocation() {
-        return lastMatchLocation;
     }
 
     /**

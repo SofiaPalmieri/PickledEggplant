@@ -8,6 +8,7 @@ import io.cucumber.plugin.event.TestStepStarted;
 
 import java.time.LocalDateTime;
 
+// TODO: Check this out.
 public class StepManager {
     public void finalizeStep(TestStepFinished event, TestResults testResults) {
         TestRunInfo info = testResults.getInfoFor(event.getTestCase());
