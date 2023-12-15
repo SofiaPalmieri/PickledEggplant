@@ -12,8 +12,8 @@ import java.util.Collections;
 public class Main {
     public static void main(String[] args) {
         ConfigReader configReader = ConfigReader.getInstance();
-        String testNGXMLFile = configReader.readConfig(ConfigReader.Configs.TESTNG_XML_FILE, ConfigReader.SupportedTypes.STRING);
-        File featureListFile = new File(configReader.<String>readConfig(ConfigReader.Configs.FEATURE_LIST_FILE, ConfigReader.SupportedTypes.STRING));
+        String testNGXMLFile = configReader.readConfig(ConfigReader.ConfigParam.TESTNG_XML_FILE, ConfigReader.SupportedType.STRING);
+        File featureListFile = new File(configReader.<String>readConfig(ConfigReader.ConfigParam.FEATURE_LIST_FILE, ConfigReader.SupportedType.STRING));
         TestNG testNG = new TestNG();
         String features = getFeatures(featureListFile);
         System.setProperty("cucumber.features", features);

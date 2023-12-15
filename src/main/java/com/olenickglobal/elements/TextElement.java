@@ -1,132 +1,43 @@
 package com.olenickglobal.elements;
 
-import com.olenickglobal.exceptions.TesseractOCRException;
-import com.olenickglobal.configuration.ConfigReader;
-import com.olenickglobal.entities.ScreenCapture;
-import net.sourceforge.tess4j.ITessAPI;
-import net.sourceforge.tess4j.ITesseract;
-import net.sourceforge.tess4j.TesseractException;
-import net.sourceforge.tess4j.Word;
-import org.sikuli.script.FindFailed;
-import org.sikuli.script.Location;
-import org.sikuli.script.Screen;
+import com.olenickglobal.entities.Screen;
+import com.olenickglobal.exceptions.ElementNotFoundException;
+import com.olenickglobal.exceptions.ImageNotFoundException;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-import java.util.List;
 
-public class TextElement implements ScreenElement {
-    private static final double SEARCH_SCALE_FACTOR = 5;
-    private final String textToFind;
-    private ScreenCapture capture;
-    Screen screen;
+public class TextElement extends ScreenElement {
+    protected final String text;
 
-    public TextElement(String textToFind) {
-        this.textToFind = textToFind;
+    public TextElement(String text) {
+        this(text, new FixedOffset(Alignment.CENTER, 0, 0));
     }
 
-    public TextElement(ScreenCapture capture) throws FindFailed {
-        ITesseract tesseract = ConfigReader.getInstance().getTesseract();
+    public TextElement(String text, Offset offset) {
+        // TODO: Different screens?
+        super(new Screen(), offset);
+        this.text = text;
+    }
+
+    public TextElement(ScreenElement parent, String text) {
+        this(parent, text, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    public TextElement(ScreenElement parent, String text, Offset offset) {
+        // TODO: Different screens?
+        super(new Screen(), parent, offset);
+        this.text = text;
+    }
+
+    @Override
+    protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
         try {
-            this.textToFind = tesseract.doOCR(capture.getImage());
-        } catch (TesseractException e) {
-            throw new TesseractOCRException(e);
+            Rectangle area = getParentBoundingRectangle(timeout);
+            Rectangle rectangle = screen.findText(timeout, area, text);
+            setLastMatchLocation(rectangle);
+            return rectangle;
+        } catch (ImageNotFoundException e) {
+            throw new ElementNotFoundException(e);
         }
-    }
-
-    @Override
-    public void click(double timeout) throws FindFailed {
-        Rectangle found = this.find(timeout);
-        new Location(found.x, found.y).click();
-    }
-
-    @Override
-    public void doubleClick(double timeout) throws FindFailed {
-        Rectangle found = this.find(timeout);
-        new Location(found.x, found.y).doubleClick();
-    }
-
-    @Override
-    public void dragTo(ScreenElement scr, double timeout) throws FindFailed {
-        Location targetLocation = scr.getLocation(timeout);
-        Rectangle found = this.find(timeout);
-        Location destinationLocation = new Location(found.x, found.y);
-        this.screen.dragDrop(targetLocation, destinationLocation);
-    }
-
-    private Rectangle find(double timeout) throws FindFailed {
-        long limit = this.getTimeoutLimit(timeout);
-        while (this.notTimedOut(limit)) {
-            BufferedImage screen = capture.getImage();
-            ITesseract instance = ConfigReader.getInstance().getTesseract();
-            List<Word> wordBoxes = instance.getWords(screen, ITessAPI.TessPageIteratorLevel.RIL_WORD);
-            List<String> wordsToFind = List.of(this.textToFind.split(" "));
-            Rectangle rect = findBox(null, wordBoxes, wordsToFind);
-            if (rect != null) return rect;
-        }
-        throw new FindFailed("Text not found: " + this.textToFind);
-    }
-
-    private Rectangle findBox(Rectangle startingRect, List<Word> availableWords, List<String> wordsToFind) {
-        if (wordsToFind.isEmpty()) return startingRect;
-        String wordToFind = wordsToFind.get(0);
-        List<Word> matches = availableWords.stream().filter((Word w) -> w.getText().toLowerCase().contains(wordToFind.toLowerCase())).toList();
-        for (Word match : matches) {
-            if (startingRect == null) {
-                Rectangle boundingRectangle = findBox(match.getBoundingBox(), availableWords, wordsToFind.subList(1, wordsToFind.size()));
-                if (boundingRectangle != null) {
-                    return boundingRectangle;
-                }
-            } else {
-                Rectangle matchRectangle = match.getBoundingBox();
-                if (Math.sqrt(Math.pow(startingRect.x + startingRect.width - matchRectangle.x, 2) + Math.pow(startingRect.y + startingRect.height - matchRectangle.y, 2)) / (matchRectangle.height) < SEARCH_SCALE_FACTOR) {
-                    return findBox(new Rectangle(startingRect.x, startingRect.y, matchRectangle.x - startingRect.x + matchRectangle.width, matchRectangle.y - startingRect.y + matchRectangle.height), availableWords, wordsToFind.subList(1, wordsToFind.size()));
-                }
-            }
-        }
-        return null;
-    }
-
-    @Override
-    public Location getLocation(double timeout) throws FindFailed {
-        Rectangle found = this.find(timeout);
-        return new Location(found.x, found.y);
-    }
-
-    private long getTimeoutLimit(double wait) {
-        long t = java.lang.System.currentTimeMillis();
-        long MILLISECONDS_IN_SECOND = 1000;
-        return (long) (t + wait * MILLISECONDS_IN_SECOND);
-    }
-
-    @Override
-    public Boolean isFound(double timeout) {
-        try {
-            this.find(timeout);
-            return true;
-        } catch (FindFailed findFailed) {
-            return false;
-        }
-    }
-
-    @Override
-    public void moveTo(double timeout) throws FindFailed {
-        Rectangle found = this.find(timeout);
-        new Location(found.x, found.y).hover();
-    }
-
-    private boolean notTimedOut(long limit) {
-        return java.lang.System.currentTimeMillis() < limit;
-    }
-
-    @Override
-    public void rightClick(double timeout) throws FindFailed {
-        Rectangle found = this.find(timeout);
-        new Location(found.x, found.y).rightClick();
-    }
-
-    @Override
-    public void waitFor(double timeout) throws FindFailed {
-        this.find(timeout);
     }
 }

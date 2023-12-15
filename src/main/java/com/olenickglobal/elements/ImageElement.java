@@ -1,67 +1,81 @@
 package com.olenickglobal.elements;
 
 import com.olenickglobal.configuration.ConfigReader;
-import org.sikuli.script.FindFailed;
-import org.sikuli.script.Location;
-import org.sikuli.script.Screen;
+import com.olenickglobal.entities.Screen;
+import com.olenickglobal.exceptions.ElementNotFoundException;
+import com.olenickglobal.exceptions.ImageNotFoundException;
 
-public class ImageElement implements ScreenElement {
-    private final String imageName;
-    private final Screen screen;
+import java.awt.*;
 
+public class ImageElement extends ScreenElement {
+    public static final double DEFAULT_MIN_IMAGE_SIMILARITY = 0.95;
+
+    protected final String imageName;
+    protected final double minSimilarity;
+
+    /**
+     * Image element with the default target at the geometrical center of the element.
+     * @param imageName Image name, either filename or directory name.
+     */
     public ImageElement(String imageName) {
-        this.imageName = this.getFullImagePath(imageName);
-        this.screen = new Screen();
+        this(imageName, DEFAULT_MIN_IMAGE_SIMILARITY, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    /**
+     * Image element with the default target at the geometrical center of the element.
+     * @param imageName Image name, either filename or directory name.
+     */
+    public ImageElement(ScreenElement parent, String imageName) {
+        this(parent, imageName, DEFAULT_MIN_IMAGE_SIMILARITY, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    /**
+     * Image element with the default target at the geometrical center of the element.
+     * @param imageName Image name, either filename or directory name.
+     */
+    public ImageElement(String imageName, double minSimilarity) {
+        this(imageName, minSimilarity, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    /**
+     * Image element with the default target at the geometrical center of the element.
+     * @param imageName Image name, either filename or directory name.
+     */
+    public ImageElement(ScreenElement parent, String imageName, double minSimilarity) {
+        this(parent, imageName, minSimilarity, new FixedOffset(Alignment.CENTER, 0, 0));
+    }
+
+    public ImageElement(String imageName, Offset offset) {
+        this(imageName, DEFAULT_MIN_IMAGE_SIMILARITY, offset);
+    }
+
+    public ImageElement(ScreenElement parent, String imageName, Offset offset) {
+        this(parent, imageName, DEFAULT_MIN_IMAGE_SIMILARITY, offset);
+    }
+
+    public ImageElement(String imageName, double minSimilarity, Offset offset) {
+        // TODO: Different screens?
+        super(new Screen(), offset);
+        // TODO: Check if we need to do this in a different way.
+        this.imageName = ConfigReader.getInstance().getImageName(imageName);
+        this.minSimilarity = minSimilarity;
+    }
+
+    public ImageElement(ScreenElement parent, String imageName, double minSimilarity, Offset offset) {
+        // TODO: Different screens?
+        super(new Screen(), parent, offset);
+        // TODO: Check if we need to do this in a different way.
+        this.imageName = ConfigReader.getInstance().getImageName(imageName);
+        this.minSimilarity = minSimilarity;
     }
 
     @Override
-    public void click(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout).getTarget().click();
-    }
-
-    @Override
-    public void doubleClick(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout).getTarget().doubleClick();
-    }
-
-    @Override
-    public void dragTo(ScreenElement src, double timeout) throws FindFailed {
-        Location targetLocation = src.getLocation(timeout);
-        Location destinationLocation = this.getLocation(timeout);
-        this.screen.dragDrop(targetLocation, destinationLocation);
-    }
-
-    public String getFullImagePath(String imageName) {
-        return ConfigReader.getInstance().getImageName(imageName);
-    }
-
-    @Override
-    public Location getLocation(double timeout) throws FindFailed {
-        return this.screen.wait(imageName, timeout).getTarget();
-    }
-
-    @Override
-    public Boolean isFound(double timeout) {
+    protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
         try {
-            this.screen.wait(imageName, timeout);
-            return true;
-        } catch (FindFailed findFailed) {
-            return false;
+            Rectangle area = getParentBoundingRectangle(timeout);
+            return screen.findImage(timeout, area, imageName, minSimilarity);
+        } catch (ImageNotFoundException e) {
+            throw new ElementNotFoundException(e);
         }
-    }
-
-    @Override
-    public void moveTo(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout).getTarget().hover();
-    }
-
-    @Override
-    public void rightClick(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout).getTarget().rightClick();
-    }
-
-    @Override
-    public void waitFor(double timeout) throws FindFailed {
-        this.screen.wait(imageName, timeout * 1000);
     }
 }
