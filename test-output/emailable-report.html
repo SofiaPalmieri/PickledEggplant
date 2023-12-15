@@ -9,17 +9,35 @@
 <table>
 <tr><th>Test</th><th># Passed</th><th># Skipped</th><th># Retried</th><th># Failed</th><th>Time (ms)</th><th>Included Groups</th><th>Excluded Groups</th></tr>
 <tr><th colspan="8">Cucumber Test Suite</th></tr>
-<tr><td><a href="#t0">Cucumber Test</a></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">15,339</td><td></td><td></td></tr>
+<tr><td><a href="#t0">Cucumber Test</a></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">21,237</td><td></td><td></td></tr>
 </table>
-<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Cucumber Test Suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Cucumber Test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">com.olenickglobal.TestNGCucumberTests</td><td><a href="#m0">runScenario</a></td><td rowspan="1">1699902529159</td><td rowspan="1">15013</td></tr></tbody>
+<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Cucumber Test Suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Cucumber Test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">com.olenickglobal.TestNGCucumberTests</td><td><a href="#m0">runScenario</a></td><td rowspan="1">1701109149017</td><td rowspan="1">21034</td></tr></tbody>
 </table>
-<h2>Cucumber Test</h2><h3 id="m0">com.olenickglobal.TestNGCucumberTests#runScenario</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>&quot;Launch &quot;word&quot;&quot;</td><td>&quot;Application&quot;</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">FindFailed: C:\Users\lauta\OneDrive\Escritorio\Qualitest\wordTaskbaricon.png: (56x46) in R[0,0 1536x864]@S(0)
-  Line 2226, in file Region.java
-
-	at org.sikuli.script.Region.wait(Region.java:2226)
-	at com.olenickglobal.Utils.ImageElement.waitFor(ImageElement.java:52)
-	at com.olenickglobal.steps.MyStepdefs.applicationLaunches(MyStepdefs.java:39)
-	at ✽.&quot;word&quot; launches(file:///C:/Users/lauta/OneDrive/Escritorio/Qualitest/PickledEggplant/src/test/resources/features/word.feature:8)
-</div></td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
+<h2>Cucumber Test</h2><h3 id="m0">com.olenickglobal.TestNGCucumberTests#runScenario</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>&quot;Launch &quot;word&quot;&quot;</td><td>&quot;Application&quot;</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">com.olenickglobal.exceptions.OpeningExcelInReport: Error occurred while loading into excel inside the RPVReporter. Check file integrity.
+	at listeners.RPVExcelReporter.reportEvent(RPVExcelReporter.java:87)
+	at listeners.ReporterCaller.generateReports(ReporterCaller.java:28)
+	at com.olenickglobal.ListenerManager.lambda$setEventPublisher$5(ListenerManager.java:24)
+	at io.cucumber.core.eventbus.AbstractEventPublisher.send(AbstractEventPublisher.java:51)
+	at io.cucumber.core.eventbus.AbstractEventBus.send(AbstractEventBus.java:12)
+	at io.cucumber.core.runtime.SynchronizedEventBus.send(SynchronizedEventBus.java:47)
+	at io.cucumber.core.runtime.ThreadLocalRunnerSupplier$LocalEventBus.send(ThreadLocalRunnerSupplier.java:62)
+	at io.cucumber.core.runner.TestCase.emitTestCaseFinished(TestCase.java:219)
+	at io.cucumber.core.runner.TestCase.run(TestCase.java:98)
+	at io.cucumber.core.runner.Runner.runPickle(Runner.java:75)
+	at io.cucumber.testng.TestNGCucumberRunner.lambda$runScenario$1(TestNGCucumberRunner.java:132)
+	at io.cucumber.core.runtime.CucumberExecutionContext.lambda$runTestCase$5(CucumberExecutionContext.java:137)
+	at io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java:23)
+	at io.cucumber.core.runtime.CucumberExecutionContext.runTestCase(CucumberExecutionContext.java:137)
+	at io.cucumber.testng.TestNGCucumberRunner.runScenario(TestNGCucumberRunner.java:129)
+	at io.cucumber.testng.AbstractTestNGCucumberTests.runScenario(AbstractTestNGCucumberTests.java:35)
+	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+	at com.olenickglobal.Main.main(Main.java:21)
+Caused by: java.io.FileNotFoundException: C:\Users\ielia\dvlp\PickledEggplant\src\test\resources\test.xlsx (The system cannot find the file specified)
+	at java.base/java.io.FileInputStream.open0(Native Method)
+	at java.base/java.io.FileInputStream.open(FileInputStream.java:216)
+	at java.base/java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:157)
+	at listeners.RPVExcelReporter.reportEvent(RPVExcelReporter.java:75)
+	... 39 more
+... Removed 22 stack frames</div></td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
 </body>
 </html>

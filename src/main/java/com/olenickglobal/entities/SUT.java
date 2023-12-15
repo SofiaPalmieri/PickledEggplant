@@ -1,15 +1,11 @@
-package com.olenickglobal.Utils;
+package com.olenickglobal.entities;
 
-
-import com.olenickglobal.Exceptions.SUTRobot;
+import com.olenickglobal.exceptions.SUTRobot;
 
 import java.awt.*;
-import java.awt.image.BufferedImage;
-
 
 public class SUT {
-
-    private Robot robot;
+    private final Robot robot;
 
     public SUT() {
         try {
@@ -17,16 +13,19 @@ public class SUT {
         } catch (AWTException e) {
             throw new SUTRobot(e);
         }
-
-    }
-
-    public void moveTo(int x,int y){
-        this.robot.mouseMove(x,y);
     }
 
     public ScreenCapture getCroppedScreen(Rectangle rectangle) {
         ScreenCapture capture = this.getCurrentScreen();
         return capture.cropTo(rectangle);
+    }
+
+    public ScreenCapture getCurrentScreen() {
+        return new ScreenCapture(this.robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())));
+    }
+
+    public void moveTo(int x, int y) {
+        this.robot.mouseMove(x, y);
     }
 
     public void typeText(String text) {
@@ -35,10 +34,4 @@ public class SUT {
             this.robot.keyRelease(java.awt.event.KeyEvent.getExtendedKeyCodeForChar(c));
         }
     }
-
-    public ScreenCapture getCurrentScreen() {
-        return new ScreenCapture(this.robot.createScreenCapture(new Rectangle(Toolkit.getDefaultToolkit().getScreenSize())));
-    }
-
 }
-

@@ -1,8 +1,6 @@
-package com.olenickglobal.Utils;
-
+package com.olenickglobal.entities;
 
 public class Application {
-
     private final String name;
     private final String version;
 

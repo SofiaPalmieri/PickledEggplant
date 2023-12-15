@@ -2,26 +2,26 @@
 <testng-results ignored="0" total="1" passed="0" failed="1" skipped="0">
   <reporter-output>
   </reporter-output>
-  <suite started-at="2023-11-13T16:08:48 ART" name="Cucumber Test Suite" finished-at="2023-11-13T16:09:04 ART" duration-ms="15339">
+  <suite started-at="2023-11-27T15:19:08 ART" name="Cucumber Test Suite" finished-at="2023-11-27T15:19:30 ART" duration-ms="21237">
     <groups>
       <group name="cucumber">
-        <method signature="AbstractTestNGCucumberTests.runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@7e0b85f9]" name="runScenario" class="io.cucumber.testng.AbstractTestNGCucumberTests"/>
+        <method signature="AbstractTestNGCucumberTests.runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@1622f1b]" name="runScenario" class="io.cucumber.testng.AbstractTestNGCucumberTests"/>
       </group> <!-- cucumber -->
     </groups>
-    <test started-at="2023-11-13T16:08:48 ART" name="Cucumber Test" finished-at="2023-11-13T16:09:04 ART" duration-ms="15339">
+    <test started-at="2023-11-27T15:19:08 ART" name="Cucumber Test" finished-at="2023-11-27T15:19:30 ART" duration-ms="21237">
       <class name="com.olenickglobal.TestNGCucumberTests">
-        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@7e0b85f9]" started-at="2023-11-13T16:08:48 ART" name="setUpClass" finished-at="2023-11-13T16:08:49 ART" duration-ms="257" status="PASS">
+        <test-method is-config="true" signature="setUpClass(org.testng.ITestContext)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@1622f1b]" started-at="2023-11-27T15:19:08 ART" name="setUpClass" finished-at="2023-11-27T15:19:09 ART" duration-ms="171" status="PASS">
           <params>
             <param index="0">
               <value>
-                <![CDATA[org.testng.TestRunner@280d9edc]]>
+                <![CDATA[org.testng.TestRunner@245a26e1]]>
               </value>
             </param>
           </params>
           <reporter-output>
           </reporter-output>
         </test-method> <!-- setUpClass -->
-        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@7e0b85f9]" started-at="2023-11-13T16:08:49 ART" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2023-11-13T16:09:04 ART" duration-ms="15013" status="FAIL">
+        <test-method signature="runScenario(io.cucumber.testng.PickleWrapper,io.cucumber.testng.FeatureWrapper)[pri:0, instance:com.olenickglobal.TestNGCucumberTests@1622f1b]" started-at="2023-11-27T15:19:09 ART" name="runScenario" description="Runs Cucumber Scenarios" data-provider="scenarios" finished-at="2023-11-27T15:19:30 ART" duration-ms="21034" status="FAIL">
           <params>
             <param index="0">
               <value>
@@ -34,25 +34,65 @@
               </value>
             </param>
           </params>
-          <exception class="org.sikuli.script.FindFailed">
+          <exception class="com.olenickglobal.exceptions.OpeningExcelInReport">
             <message>
-              <![CDATA[C:\Users\lauta\OneDrive\Escritorio\Qualitest\wordTaskbaricon.png: (56x46) in R[0,0 1536x864]@S(0)]]>
+              <![CDATA[Error occurred while loading into excel inside the RPVReporter. Check file integrity.]]>
             </message>
             <full-stacktrace>
-              <![CDATA[FindFailed: C:\Users\lauta\OneDrive\Escritorio\Qualitest\wordTaskbaricon.png: (56x46) in R[0,0 1536x864]@S(0)
-  Line 2226, in file Region.java
-
-at org.sikuli.script.Region.wait(Region.java:2226)
-at com.olenickglobal.Utils.ImageElement.waitFor(ImageElement.java:52)
-at com.olenickglobal.steps.MyStepdefs.applicationLaunches(MyStepdefs.java:39)
-at ✽."word" launches(file:///C:/Users/lauta/OneDrive/Escritorio/Qualitest/PickledEggplant/src/test/resources/features/word.feature:8)
+              <![CDATA[com.olenickglobal.exceptions.OpeningExcelInReport: Error occurred while loading into excel inside the RPVReporter. Check file integrity.
+at listeners.RPVExcelReporter.reportEvent(RPVExcelReporter.java:87)
+at listeners.ReporterCaller.generateReports(ReporterCaller.java:28)
+at com.olenickglobal.ListenerManager.lambda$setEventPublisher$5(ListenerManager.java:24)
+at io.cucumber.core.eventbus.AbstractEventPublisher.send(AbstractEventPublisher.java:51)
+at io.cucumber.core.eventbus.AbstractEventBus.send(AbstractEventBus.java:12)
+at io.cucumber.core.runtime.SynchronizedEventBus.send(SynchronizedEventBus.java:47)
+at io.cucumber.core.runtime.ThreadLocalRunnerSupplier$LocalEventBus.send(ThreadLocalRunnerSupplier.java:62)
+at io.cucumber.core.runner.TestCase.emitTestCaseFinished(TestCase.java:219)
+at io.cucumber.core.runner.TestCase.run(TestCase.java:98)
+at io.cucumber.core.runner.Runner.runPickle(Runner.java:75)
+at io.cucumber.testng.TestNGCucumberRunner.lambda$runScenario$1(TestNGCucumberRunner.java:132)
+at io.cucumber.core.runtime.CucumberExecutionContext.lambda$runTestCase$5(CucumberExecutionContext.java:137)
+at io.cucumber.core.runtime.RethrowingThrowableCollector.executeAndThrow(RethrowingThrowableCollector.java:23)
+at io.cucumber.core.runtime.CucumberExecutionContext.runTestCase(CucumberExecutionContext.java:137)
+at io.cucumber.testng.TestNGCucumberRunner.runScenario(TestNGCucumberRunner.java:129)
+at io.cucumber.testng.AbstractTestNGCucumberTests.runScenario(AbstractTestNGCucumberTests.java:35)
+at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(DirectMethodHandleAccessor.java:104)
+at java.base/java.lang.reflect.Method.invoke(Method.java:577)
+at org.testng.internal.invokers.MethodInvocationHelper.invokeMethod(MethodInvocationHelper.java:139)
+at org.testng.internal.invokers.TestInvoker.invokeMethod(TestInvoker.java:664)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethod(TestInvoker.java:227)
+at org.testng.internal.invokers.MethodRunner.runInSequence(MethodRunner.java:50)
+at org.testng.internal.invokers.TestInvoker$MethodInvocationAgent.invoke(TestInvoker.java:957)
+at org.testng.internal.invokers.TestInvoker.invokeTestMethods(TestInvoker.java:200)
+at org.testng.internal.invokers.TestMethodWorker.invokeTestMethods(TestMethodWorker.java:148)
+at org.testng.internal.invokers.TestMethodWorker.run(TestMethodWorker.java:128)
+at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
+at org.testng.TestRunner.privateRun(TestRunner.java:848)
+at org.testng.TestRunner.run(TestRunner.java:621)
+at org.testng.SuiteRunner.runTest(SuiteRunner.java:443)
+at org.testng.SuiteRunner.runSequentially(SuiteRunner.java:437)
+at org.testng.SuiteRunner.privateRun(SuiteRunner.java:397)
+at org.testng.SuiteRunner.run(SuiteRunner.java:336)
+at org.testng.SuiteRunnerWorker.runSuite(SuiteRunnerWorker.java:52)
+at org.testng.SuiteRunnerWorker.run(SuiteRunnerWorker.java:95)
+at org.testng.TestNG.runSuitesSequentially(TestNG.java:1280)
+at org.testng.TestNG.runSuitesLocally(TestNG.java:1200)
+at org.testng.TestNG.runSuites(TestNG.java:1114)
+at org.testng.TestNG.run(TestNG.java:1082)
+at com.olenickglobal.Main.main(Main.java:21)
+Caused by: java.io.FileNotFoundException: C:\Users\ielia\dvlp\PickledEggplant\src\test\resources\test.xlsx (The system cannot find the file specified)
+at java.base/java.io.FileInputStream.open0(Native Method)
+at java.base/java.io.FileInputStream.open(FileInputStream.java:216)
+at java.base/java.io.FileInputStream.<init>(FileInputStream.java:157)
+at listeners.RPVExcelReporter.reportEvent(RPVExcelReporter.java:75)
+... 39 more
 ]]>
             </full-stacktrace>
-          </exception> <!-- org.sikuli.script.FindFailed -->
+          </exception> <!-- com.olenickglobal.exceptions.OpeningExcelInReport -->
           <reporter-output>
           </reporter-output>
         </test-method> <!-- runScenario -->
-        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:com.olenickglobal.TestNGCucumberTests@7e0b85f9]" started-at="2023-11-13T16:09:04 ART" name="tearDownClass" finished-at="2023-11-13T16:09:04 ART" duration-ms="4" status="PASS">
+        <test-method is-config="true" signature="tearDownClass()[pri:0, instance:com.olenickglobal.TestNGCucumberTests@1622f1b]" started-at="2023-11-27T15:19:30 ART" name="tearDownClass" finished-at="2023-11-27T15:19:30 ART" duration-ms="1" status="PASS">
           <reporter-output>
           </reporter-output>
         </test-method> <!-- tearDownClass -->

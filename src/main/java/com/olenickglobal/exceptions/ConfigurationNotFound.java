@@ -1,4 +1,4 @@
-package com.olenickglobal.Exceptions;
+package com.olenickglobal.exceptions;
 
 public class ConfigurationNotFound extends RuntimeException {
     public ConfigurationNotFound(String config) {
