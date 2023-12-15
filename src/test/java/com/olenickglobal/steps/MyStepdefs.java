@@ -34,8 +34,7 @@ public class MyStepdefs implements ConcurrentEventListener {
     @When("launch {string}")
     public void launchApplication(String appName) throws ElementNotFoundException, InteractionFailedException {
         ImageElement application = new ImageElement(mainParent, appName + "Icon");
-        application.waitFor(15);
-        application.click(15);
+        application.click(5);
     }
 
     @When("search for {string}")

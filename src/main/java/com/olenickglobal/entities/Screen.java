@@ -139,7 +139,7 @@ public class Screen {
     public Rectangle findImage(double timeout, Rectangle area, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
         try {
             Match match = getRegion(area).wait(asPattern(image, minSimilarity), timeout);
-            if (!match.isValid()) {
+            if (match == null || !match.isValid()) {
                 throw new ImageNotFoundException("Unable to find image: Match invalid.");
             }
             return match.getRect();
@@ -181,7 +181,7 @@ public class Screen {
             } else {
                 match = region.wait(asPattern(file, minSimilarity), timeout);
             }
-            if (!match.isValid()) {
+            if (match == null || !match.isValid()) {
                 throw new ImageNotFoundException("Unable to find '" + path + "': Match invalid.");
             }
             return match.getRect();

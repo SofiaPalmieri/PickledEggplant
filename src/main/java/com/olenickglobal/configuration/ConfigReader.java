@@ -63,11 +63,11 @@ public class ConfigReader {
     }
 
     public String getImageName(String imageName) {
-        return readConfig(ConfigParam.IMAGES_PATH, SupportedType.STRING) + "\\" + imageName;
+        return readConfig(ConfigParam.IMAGES_PATH, SupportedType.STRING) + "/" + imageName;
     }
 
     public String getScreenshotName(String screenshotName) {
-        return readConfig(ConfigParam.SCREENSHOTS_PATH, SupportedType.STRING) + "\\" + screenshotName;
+        return readConfig(ConfigParam.SCREENSHOTS_PATH, SupportedType.STRING) + "/" + screenshotName;
     }
 
     public ITesseract getTesseract() {
@@ -105,10 +105,14 @@ public class ConfigReader {
         }
     }
 
+    @SuppressWarnings("DataFlowIssue")
     private JSONObject getRuntimeConfigs() {
         JSONObject object;
         try {
-            String data = new String(Files.readAllBytes(Paths.get(System.getProperty(RUNTIME_CONFIG_FILE_PROPERTY))));
+            // TODO: Would it make sense to move this piece of code dealing with a default filename to FileUtils?
+            String runtimeConfigResource = this.getClass().getClassLoader().getResource("runtime.json").getPath();
+            String runtimeConfigFilename = System.getProperty(RUNTIME_CONFIG_FILE_PROPERTY, runtimeConfigResource.indexOf(':') > 0 ? runtimeConfigResource.substring(1) : runtimeConfigResource);
+            String data = new String(Files.readAllBytes(Paths.get(runtimeConfigFilename)));
             object = new JSONObject(data);
         } catch (IOException e) {
             throw new ConfigurationError("Failure to add static configurations, remember to set -DRUNTIME_CONFIG_FILE in your vm options", e);
@@ -118,10 +122,14 @@ public class ConfigReader {
         return object;
     }
 
+    @SuppressWarnings("DataFlowIssue")
     private JSONObject getStaticConfigs() {
         JSONObject object;
         try {
-            String data = new String(Files.readAllBytes(Paths.get(System.getProperty(STATIC_CONFIG_FILE_PROPERTY))));
+            // TODO: Would it make sense to move this piece of code dealing with a default filename to FileUtils?
+            String staticConfigResource = this.getClass().getClassLoader().getResource("config.json").getPath();
+            String staticConfigFilename = System.getProperty(STATIC_CONFIG_FILE_PROPERTY, staticConfigResource.indexOf(':') > 0 ? staticConfigResource.substring(1) : staticConfigResource);
+            String data = new String(Files.readAllBytes(Paths.get(staticConfigFilename)));
             object = new JSONObject(data);
         } catch (IOException e) {
             throw new ConfigurationError("Failure to add static configurations, remember to set -DSTATIC_CONFIG_FILE in your vm options", e);
