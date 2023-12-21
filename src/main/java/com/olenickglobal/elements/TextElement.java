@@ -1,6 +1,6 @@
 package com.olenickglobal.elements;
 
-import com.olenickglobal.entities.Screen;
+import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 
@@ -15,7 +15,7 @@ public class TextElement extends ScreenElement {
 
     public TextElement(String text, Offset offset) {
         // TODO: Different screens?
-        super(new Screen(), offset);
+        super(SUT.getInstance().getScreen(), offset);
         this.text = text;
     }
 
@@ -25,7 +25,7 @@ public class TextElement extends ScreenElement {
 
     public TextElement(ScreenElement parent, String text, Offset offset) {
         // TODO: Different screens?
-        super(new Screen(), parent, offset);
+        super(SUT.getInstance().getScreen(), parent, offset);
         this.text = text;
     }
 

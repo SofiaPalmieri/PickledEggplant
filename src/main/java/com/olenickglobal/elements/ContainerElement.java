@@ -1,6 +1,6 @@
 package com.olenickglobal.elements;
 
-import com.olenickglobal.entities.Screen;
+import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 
 import java.awt.*;
@@ -16,7 +16,7 @@ public class ContainerElement extends ScreenElement {
 
     public ContainerElement(ScreenElement... contents) {
         // TODO: Different screens?
-        super(new Screen(), new FixedOffset(Alignment.CENTER, 0, 0));
+        super(SUT.getInstance().getScreen(), new FixedOffset(Alignment.CENTER, 0, 0));
         this.contents = Arrays.asList(contents);
     }
 

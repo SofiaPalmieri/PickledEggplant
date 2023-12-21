@@ -1,5 +1,8 @@
 package com.olenickglobal.elements;
 
+import com.olenickglobal.elements.events.EventEmitter;
+import com.olenickglobal.elements.events.EventListener;
+import com.olenickglobal.elements.events.EventType;
 import com.olenickglobal.entities.Screen;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
@@ -9,11 +12,11 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 
 public abstract class ScreenElement {
-    protected final Screen screen;
-
-    protected ScreenElement parent;
-    protected Offset offset;
+    protected final EventEmitter eventEmitter;
     protected Rectangle lastMatchLocation;
+    protected Offset offset;
+    protected ScreenElement parent;
+    protected Screen screen;
     protected boolean useCachedParentLocation = true;
 
     public ScreenElement(Screen screen, Offset offset) {
@@ -21,8 +24,9 @@ public abstract class ScreenElement {
     }
 
     public ScreenElement(Screen screen, ScreenElement parent, Offset offset) {
+        eventEmitter = new EventEmitter();
         this.screen = screen;
-        this.parent = parent;
+        this.parent = parent == null ? screen.getSUT().getMainParentBoundariesElement() : parent;
         this.offset = offset;
     }
 
@@ -36,6 +40,16 @@ public abstract class ScreenElement {
      */
     // TODO: Caching policy?
     abstract Rectangle getMatch(double timeout) throws ElementNotFoundException;
+
+    /**
+     * Add an event listener.
+     * @param type Event type.
+     * @param listener Event listener for the event type.
+     * @return True if the listener was added, false otherwise.
+     */
+    public boolean addEventListener(EventType type, EventListener<?, ?> listener) {
+        return eventEmitter.addEventListener(type, listener);
+    }
 
     /**
      * Captures the element's rectangle from the screen.
@@ -371,6 +385,14 @@ public abstract class ScreenElement {
     }
 
     /**
+     * Get screen where the element is.
+     * @return Screen instance.
+     */
+    public Screen getScreen() {
+        return screen;
+    }
+
+    /**
      * Get the target point of this element (usually its center point, see {@link #getOffset} and {@link #setOffset}).
      * @param timeout Search timeout in seconds.
      * @return Target point, specified by this element's rectangle and the configured offset.
@@ -518,6 +540,16 @@ public abstract class ScreenElement {
      */
     public Boolean isVisible(double timeout) {
         return isDisplayed(timeout);
+    }
+
+    /**
+     * Remove a pre-existing event listener.
+     * @param type Event type.
+     * @param listener Event listener for the event type.
+     * @return True if the listener was listening for events, false otherwise.
+     */
+    public boolean removeEventListener(EventType type, EventListener<?, ?> listener) {
+        return eventEmitter.removeEventListener(type, listener);
     }
 
     /**

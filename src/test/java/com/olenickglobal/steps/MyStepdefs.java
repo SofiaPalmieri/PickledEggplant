@@ -16,7 +16,7 @@ public class MyStepdefs implements ConcurrentEventListener {
 
     public MyStepdefs(SUT sut) {
         this.sut = sut;
-        mainParent = sut.getMainParentElement();
+        mainParent = sut.selectMainParentBoundariesElement();
     }
 
     @Then("{string} launches")

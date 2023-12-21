@@ -1,7 +1,7 @@
 package com.olenickglobal.elements;
 
 import com.olenickglobal.configuration.ConfigReader;
-import com.olenickglobal.entities.Screen;
+import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 
@@ -55,7 +55,7 @@ public class ImageElement extends ScreenElement {
 
     public ImageElement(String imageName, double minSimilarity, Offset offset) {
         // TODO: Different screens?
-        super(new Screen(), offset);
+        super(SUT.getInstance().getScreen(), offset);
         // TODO: Check if we need to do this in a different way.
         this.imageName = ConfigReader.getInstance().getImageName(imageName);
         this.minSimilarity = minSimilarity;
@@ -63,7 +63,7 @@ public class ImageElement extends ScreenElement {
 
     public ImageElement(ScreenElement parent, String imageName, double minSimilarity, Offset offset) {
         // TODO: Different screens?
-        super(new Screen(), parent, offset);
+        super(parent.getScreen(), parent, offset);
         // TODO: Check if we need to do this in a different way.
         this.imageName = ConfigReader.getInstance().getImageName(imageName);
         this.minSimilarity = minSimilarity;

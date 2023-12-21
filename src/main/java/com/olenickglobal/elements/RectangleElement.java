@@ -1,6 +1,6 @@
 package com.olenickglobal.elements;
 
-import com.olenickglobal.entities.Screen;
+import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 
@@ -70,7 +70,7 @@ public class RectangleElement extends ScreenElement {
 
     public RectangleElement(ScreenElement parent, Function<Rectangle, Rectangle> translationFunction, Offset offset) {
         // TODO: Different screens?
-        super(new Screen(), parent, offset);
+        super(SUT.getInstance().getScreen(), parent, offset);
         this.translationFunction = translationFunction;
     }
 
