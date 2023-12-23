@@ -1,8 +1,5 @@
 package com.olenickglobal.elements.events;
 
-import java.time.Duration;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReferenceArray;
@@ -14,21 +11,18 @@ public class EventEmitter {
     protected final AtomicReferenceArray<Map<EventListener<?, ?>, Boolean>> listeners =
             new AtomicReferenceArray<>(EventType.values().length);
 
-    public static Duration duration(LocalDateTime startTime, LocalDateTime endTime) {
-        return Duration.ofNanos(endTime.until(endTime, ChronoUnit.NANOS));
-    }
-
     /**
      * Add an event listener.
      *
      * @param type     Event type.
      * @param listener Event listener for the event type.
-     * @return True if the listener was added, false otherwise.
+     * @return True if the listener was added, false if the listener was already registered.
      */
     public boolean addEventListener(EventType type, EventListener<?, ?> listener) {
         int position = type.ordinal();
         listeners.compareAndSet(position, null, new ConcurrentHashMap<>());
-        return listeners.get(position).put(listener, Boolean.TRUE) == Boolean.TRUE;
+        Map<EventListener<?, ?>, Boolean> listenersForType = listeners.get(position);
+        return !listenersForType.containsKey(listener) && listenersForType.put(listener, Boolean.TRUE) == null;
     }
 
     /**
