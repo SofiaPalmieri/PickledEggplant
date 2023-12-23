@@ -6,8 +6,8 @@
     "REPORTERS": [
         {
             "type": "rpvexcel",
-            "EXCEL_PATH": "test-output/test.xlsx"
+            "EXCEL_PATH": "test.xlsx"
         }
     ],
-    "EXCEL_PATH": "test-output/test.xlsx"
+    "EXCEL_PATH": "test.xlsx"
 }

@@ -1,11 +1,18 @@
 package com.olenickglobal.elements;
 
 import com.olenickglobal.configuration.ConfigReader;
+import com.olenickglobal.elements.events.Event;
+import com.olenickglobal.elements.events.EventData;
+import com.olenickglobal.elements.events.EventDataBuilder;
+import com.olenickglobal.elements.events.EventType;
+import com.olenickglobal.elements.events.ImageLocator;
+import com.olenickglobal.elements.events.LocatingData;
 import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 
 import java.awt.*;
+import java.time.LocalDateTime;
 
 public class ImageElement extends ScreenElement {
     public static final double DEFAULT_MIN_IMAGE_SIMILARITY = 0.95;
@@ -70,12 +77,18 @@ public class ImageElement extends ScreenElement {
     }
 
     @Override
-    protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
-        try {
-            Rectangle area = getParentBoundingRectangle(timeout);
-            return screen.findImage(timeout, area, imageName, minSimilarity);
-        } catch (ImageNotFoundException e) {
-            throw new ElementNotFoundException(e);
-        }
+    @SuppressWarnings("unchecked")
+    protected Rectangle getMatch(final double timeout) throws ElementNotFoundException {
+        return performAction(EventType.BEFORE_LOCATING, EventType.AFTER_LOCATING, EventType.LOCATING_ERROR,
+                new Class[] { ElementNotFoundException.class },
+                new LocatingData<>(timeout, new ImageLocator(imageName, minSimilarity), null, this),
+                (LocatingData.LocatingDataBuilder<ImageLocator> builder) -> {
+                    Rectangle parentArea, rectangle;
+                    builder
+                            .withSearchFrame(parentArea = getParentBoundingRectangle(timeout))
+                            .withRectangle(rectangle = screen.findImage(timeout, parentArea, imageName, minSimilarity));
+                    setLastMatchLocation(rectangle);
+                    return rectangle;
+                });
     }
 }

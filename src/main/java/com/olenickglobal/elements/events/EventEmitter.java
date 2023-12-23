@@ -7,6 +7,9 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicReferenceArray;
 
+/**
+ * Event emitter.
+ */
 public class EventEmitter {
     protected final AtomicReferenceArray<Map<EventListener<?, ?>, Boolean>> listeners =
             new AtomicReferenceArray<>(EventType.values().length);
@@ -17,7 +20,8 @@ public class EventEmitter {
 
     /**
      * Add an event listener.
-     * @param type Event type.
+     *
+     * @param type     Event type.
      * @param listener Event listener for the event type.
      * @return True if the listener was added, false otherwise.
      */
@@ -29,8 +33,9 @@ public class EventEmitter {
 
     /**
      * Notify listeners.
-     * @param <T> Event data type.
-     * @param <U> Error type.
+     *
+     * @param <T>   Event data type.
+     * @param <U>   Error type.
      * @param event Event object.
      */
     // TODO: Should we notify threads?
@@ -52,7 +57,8 @@ public class EventEmitter {
 
     /**
      * Remove a pre-existing event listener.
-     * @param type Event type.
+     *
+     * @param type     Event type.
      * @param listener Event listener for the event type.
      * @return True if the listener was listening for events, false otherwise.
      */

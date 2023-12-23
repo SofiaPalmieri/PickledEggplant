@@ -188,26 +188,27 @@ public class Screen {
     public Rectangle findImage(double timeout, Rectangle area, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
         EventType endEventType = EventType.AFTER_LOCATING;
         Rectangle matchRect = null;
-        Throwable error = null;
+        RuntimeException error = null;
         LocalDateTime startTime = LocalDateTime.now();
         eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_LOCATING, new LocatingData<>(timeout,
                 new ImageLocator(image, minSimilarity), area)));
         try {
             Match match = getRegion(area).wait(asPattern(image, minSimilarity), timeout);
             if (match == null || !match.isValid()) {
-                throw new ImageNotFoundException("Unable to find image: Match invalid.");
+                endEventType = EventType.LOCATING_ERROR;
+                throw error = new ImageNotFoundException("Unable to find image: Match invalid.");
             }
             return matchRect = match.getRect();
         } catch (FindFailed e) {
             endEventType = EventType.LOCATING_ERROR;
-            throw (ImageNotFoundException)(error = new ImageNotFoundException(e));
+            throw error = new ImageNotFoundException(e);
         } catch (RuntimeException e) { // SikuliX throws this. Blame them.
             endEventType = EventType.LOCATING_ERROR;
             String message = e.getMessage();
             if (message != null && message.startsWith("SikuliX:")) {
-                throw (ImageNotFoundException)(error = new ImageNotFoundException(e));
+                throw error = new ImageNotFoundException(e);
             }
-            throw (RuntimeException)(error = e);
+            throw error = e;
         } finally {
             eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new LocatingData<>(timeout,
                     new ImageLocator(image, minSimilarity), area, null, matchRect), error));

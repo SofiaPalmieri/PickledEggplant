@@ -1,10 +1,15 @@
 package com.olenickglobal.elements;
 
+import com.olenickglobal.elements.events.Event;
+import com.olenickglobal.elements.events.EventType;
+import com.olenickglobal.elements.events.ImageLocator;
+import com.olenickglobal.elements.events.LocatingData;
 import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 
 import java.awt.*;
+import java.time.LocalDateTime;
 import java.util.function.Function;
 
 public class RectangleElement extends ScreenElement {
@@ -76,13 +81,25 @@ public class RectangleElement extends ScreenElement {
 
     @Override
     protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
+        // TODO: Do we need to emit a LOCATING event here?
+        EventType endEventType = EventType.AFTER_LOCATING;
+        ElementNotFoundException error = null;
+        Rectangle rectangle = null;
+        Rectangle parentArea = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_LOCATING, new LocatingData<>(timeout,
+                translationFunction, null, this)));
         try {
-            Rectangle area = getParentBoundingRectangle(timeout);
-            Rectangle rectangle = translationFunction.apply(area == null ? screen.getBounds() : area);
+            parentArea = getParentBoundingRectangle(timeout);
+            rectangle = translationFunction.apply(parentArea);
             setLastMatchLocation(rectangle);
-            return rectangle;
         } catch (ImageNotFoundException e) {
-            throw new ElementNotFoundException(e);
+            endEventType = EventType.LOCATING_ERROR;
+            throw error = new ElementNotFoundException(e);
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new LocatingData<>(timeout,
+                    translationFunction, parentArea, this, rectangle), error));
         }
+        return rectangle;
     }
 }

@@ -22,6 +22,7 @@ public class ContainerElement extends ScreenElement {
 
     @Override
     protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
+        // TODO: Do we need to emit a LOCATING event here?
         Rectangle screenBounds = screen.getBounds();
         int x = screenBounds.x;
         int y = screenBounds.y;
