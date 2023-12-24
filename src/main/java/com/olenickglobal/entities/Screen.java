@@ -187,6 +187,7 @@ public class Screen {
 
     public Rectangle findImage(double timeout, Rectangle area, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
         EventType endEventType = EventType.AFTER_LOCATING;
+        BufferedImage bestMatch = null;
         Rectangle matchRect = null;
         RuntimeException error = null;
         LocalDateTime startTime = LocalDateTime.now();
@@ -198,6 +199,7 @@ public class Screen {
                 endEventType = EventType.LOCATING_ERROR;
                 throw error = new ImageNotFoundException("Unable to find image: Match invalid.");
             }
+            bestMatch = match.getImage().get();
             return matchRect = match.getRect();
         } catch (FindFailed e) {
             endEventType = EventType.LOCATING_ERROR;
@@ -211,7 +213,7 @@ public class Screen {
             throw error = e;
         } finally {
             eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new LocatingData<>(timeout,
-                    new ImageLocator(image, minSimilarity), area, null, matchRect), error));
+                    new ImageLocator(image, minSimilarity, bestMatch), area, null, matchRect), error));
         }
     }
 
@@ -221,6 +223,7 @@ public class Screen {
 
     public Rectangle findImage(double timeout, Rectangle area, String path, double minSimilarity) throws ImageNotFoundException {
         EventType endEventType = EventType.AFTER_LOCATING;
+        BufferedImage bestMatch = null;
         Rectangle matchRect = null;
         Throwable error = null;
         LocalDateTime startTime = LocalDateTime.now();
@@ -251,6 +254,7 @@ public class Screen {
             if (match == null || !match.isValid()) {
                 throw (ImageNotFoundException)(error = new ImageNotFoundException("Unable to find '" + path + "': Match invalid."));
             }
+            bestMatch = match.getImage().get();
             return matchRect = match.getRect();
         } catch (FindFailed e) {
             endEventType = EventType.LOCATING_ERROR;
@@ -264,7 +268,7 @@ public class Screen {
             throw (RuntimeException)(error = e);
         } finally {
             eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new LocatingData<>(timeout,
-                    new ImageLocator(path, minSimilarity), area, null, matchRect), error));
+                    new ImageLocator(path, minSimilarity, bestMatch), area, null, matchRect), error));
         }
     }
 
@@ -302,8 +306,6 @@ public class Screen {
                 }
             } while (!found && System.nanoTime() < timeoutNanos);
             throw new TextNotFoundException(text);
-        } catch (TextNotFoundException exception) {
-            throw (TextNotFoundException)(error = exception);
         } catch (RuntimeException exception) {
             throw (RuntimeException)(error = exception);
         } finally {
