@@ -8,8 +8,21 @@ import java.util.concurrent.atomic.AtomicReferenceArray;
  * Event emitter.
  */
 public class EventEmitter {
+    protected static volatile EventEmitter globalInstance;
+
     protected final AtomicReferenceArray<Map<EventListener<?, ?>, Boolean>> listeners =
             new AtomicReferenceArray<>(EventType.values().length);
+
+    public static EventEmitter getGlobal() {
+        if (globalInstance == null) {
+            synchronized (EventEmitter.class) {
+                if (globalInstance == null) {
+                    globalInstance = new EventEmitter();
+                }
+            }
+        }
+        return globalInstance;
+    }
 
     /**
      * Add an event listener.
@@ -46,6 +59,10 @@ public class EventEmitter {
                     e.printStackTrace(System.err);
                 }
             }
+        }
+        EventEmitter global = getGlobal();
+        if (this != global) {
+            global.emit(event);
         }
     }
 
