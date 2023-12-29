@@ -13,11 +13,13 @@ import net.sourceforge.tess4j.TesseractException;
 import net.sourceforge.tess4j.Word;
 import org.sikuli.basics.Settings;
 import org.sikuli.script.FindFailed;
+import org.sikuli.script.ImagePath;
 import org.sikuli.script.Location;
 import org.sikuli.script.Match;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Region;
 
+import javax.swing.JOptionPane;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -132,34 +134,24 @@ public class Screen {
         return sikuliXScreen.getBounds();
     }
 
-    public Rectangle findImage(double timeout, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
-        return findImage(timeout, null, image, minSimilarity);
+    public Rectangle internalFindImage(double timeout, BufferedImage image, double minSimilarity) throws ImageNotFoundException, FindFailed {
+        return internalFindImage(timeout, null, image, minSimilarity);
     }
 
-    public Rectangle findImage(double timeout, Rectangle area, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
-        try {
+    public Rectangle internalFindImage(double timeout, Rectangle area, BufferedImage image, double minSimilarity) throws ImageNotFoundException, FindFailed {
             Match match = getRegion(area).wait(asPattern(image, minSimilarity), timeout);
             if (match == null || !match.isValid()) {
                 throw new ImageNotFoundException("Unable to find image: Match invalid.");
             }
             return match.getRect();
-        } catch (FindFailed e) {
-            throw new ImageNotFoundException(e);
-        } catch (RuntimeException e) { // SikuliX throws this. Blame them.
-            String message = e.getMessage();
-            if (message != null && message.startsWith("SikuliX:")) {
-                throw new ImageNotFoundException(e);
-            }
-            throw e;
-        }
+
     }
 
-    public Rectangle findImage(double timeout, String path, double minSimilarity) throws ImageNotFoundException {
-        return findImage(timeout, null, path, minSimilarity);
+    public Rectangle internalFindImage(double timeout, String path, double minSimilarity) throws ImageNotFoundException, FindFailed {
+        return internalFindImage(timeout, null, path, minSimilarity);
     }
 
-    public Rectangle findImage(double timeout, Rectangle area, String path, double minSimilarity) throws ImageNotFoundException {
-        try {
+    public Rectangle internalFindImage(double timeout, Rectangle area, String path, double minSimilarity) throws ImageNotFoundException, FindFailed {
             Match match;
             File file = new File(path);
             if (!file.exists()) {
@@ -185,23 +177,45 @@ public class Screen {
                 throw new ImageNotFoundException("Unable to find '" + path + "': Match invalid.");
             }
             return match.getRect();
-        } catch (FindFailed e) {
-            throw new ImageNotFoundException(e);
-        } catch (RuntimeException e) { // SikuliX throws this. Blame them.
-            String message = e.getMessage();
-            if (message != null && message.startsWith("SikuliX:")) {
-                throw new ImageNotFoundException(e);
+
+    }
+
+    public Rectangle findImage(double timeout, Rectangle area, String path, double minSimilarity) throws FindFailed, InterruptedException {
+        try{
+           return this.internalFindImage(timeout,area,path, minSimilarity);
+        }catch(FindFailed e){
+            String[] options = new String[]{"Try again", "Cancel"};
+
+            int optionPane = JOptionPane.showOptionDialog(null,
+                    "Image " + path + " was not found",
+                    "Find Failed",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.INFORMATION_MESSAGE,
+                    null,
+                    options,
+                    options[0]);
+
+            if (optionPane == 0){
+                Settings.setImageCache(0);
+                ImagePath.reset(path);
+                Thread.sleep(2000);
+                this.findImage(timeout,area,path, minSimilarity);
+                Settings.setImageCache(64);
+                return this.internalFindImage(timeout,area,path, minSimilarity);
+
+            }  else{
+                throw  new FindFailed("Find Failed");
             }
-            throw e;
+
         }
     }
 
-    public Rectangle findText(double timeout, String text) {
-        return findText(timeout, null, text);
+    public Rectangle internalFindText(double timeout, String text) {
+        return internalFindText(timeout, null, text);
     }
 
     @SuppressWarnings("BusyWait") // No point of using wait-notify here.
-    public Rectangle findText(double timeout, Rectangle area, String text) {
+    public Rectangle internalFindText(double timeout, Rectangle area, String text) {
         // TODO: Check if this can be done more accurately.
         boolean found = false;
         List<String> words = List.of(text.split(" "));
@@ -277,6 +291,30 @@ public class Screen {
 
     public void rightClick(Point target, int modifiers, double delay) {
         performDelayedClickAction(sikuliXScreen::rightClick, target, modifiers, delay);
+    }
+
+    public void type(Point target, String text) throws FindFailed {
+        sikuliXScreen.type(target,text);
+    }
+
+    public void type(String text) throws FindFailed {
+        sikuliXScreen.type(text);
+    }
+
+    public void type(Point target, String text, int modifiers) throws FindFailed {
+        sikuliXScreen.type(target,text,modifiers);
+    }
+
+    public void type(Point target, String text, String modifiers) throws FindFailed {
+        sikuliXScreen.type(target,text,modifiers);
+    }
+
+    public void type(String text, String modifiers) throws FindFailed {
+        sikuliXScreen.type(text,modifiers);
+    }
+
+    public void wait(Double seconds) throws FindFailed {
+        sikuliXScreen.wait(seconds);
     }
 
     /*

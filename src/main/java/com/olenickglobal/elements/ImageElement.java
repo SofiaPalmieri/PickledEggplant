@@ -4,6 +4,7 @@ import com.olenickglobal.configuration.ConfigReader;
 import com.olenickglobal.entities.Screen;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
+import org.sikuli.script.FindFailed;
 
 import java.awt.*;
 
@@ -76,6 +77,9 @@ public class ImageElement extends ScreenElement {
             return screen.findImage(timeout, area, imageName, minSimilarity);
         } catch (ImageNotFoundException e) {
             throw new ElementNotFoundException(e);
+        } catch (FindFailed | InterruptedException e) {
+            throw new RuntimeException(e);
         }
+
     }
 }

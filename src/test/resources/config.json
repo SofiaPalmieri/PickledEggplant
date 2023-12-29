@@ -1,7 +1,7 @@
 {
     "IMAGES_PATH": "src/test/resources/images",
     "SCREENSHOTS_PATH": "test-output/screenshots",
-    "TESSERACT_DATA_PATH": "C:/Users/ielia/Downloads",
+    "TESSERACT_DATA_PATH": "C:/Users/sofia/OneDrive - UTN.BA/PC/Qualitest/tessdata",
     "TESTNG_XML_FILE": "src/test/resources/testng.xml",
     "REPORTERS": [
         {

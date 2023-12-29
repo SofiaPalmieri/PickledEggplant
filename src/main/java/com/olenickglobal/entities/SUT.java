@@ -5,6 +5,7 @@ import com.olenickglobal.elements.ScreenElement;
 import com.olenickglobal.exceptions.SUTRobotException;
 import com.olenickglobal.exceptions.SavingScreenCaptureException;
 import com.olenickglobal.utils.FileUtils;
+import org.sikuli.script.FindFailed;
 
 import javax.imageio.ImageIO;
 import java.awt.*;
@@ -84,11 +85,13 @@ public class SUT {
         return file;
     }
 
-    public void typeText(String text) {
+    public void typeText(String text) throws FindFailed, InterruptedException {
         // TODO: Should we move this to the Screen class?
-        for (char c : text.toCharArray()) {
-            robot.keyPress(java.awt.event.KeyEvent.getExtendedKeyCodeForChar(c));
-            robot.keyRelease(java.awt.event.KeyEvent.getExtendedKeyCodeForChar(c));
-        }
+        screen.type(text);
     }
+
+    public void sleep(long  seconds) throws InterruptedException {
+        Thread.sleep(seconds*1000);
+    }
+
 }

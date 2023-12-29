@@ -33,7 +33,7 @@ public class TextElement extends ScreenElement {
     protected Rectangle getMatch(double timeout) throws ElementNotFoundException {
         try {
             Rectangle area = getParentBoundingRectangle(timeout);
-            Rectangle rectangle = screen.findText(timeout, area, text);
+            Rectangle rectangle = screen.internalFindText(timeout, area, text);
             setLastMatchLocation(rectangle);
             return rectangle;
         } catch (ImageNotFoundException e) {

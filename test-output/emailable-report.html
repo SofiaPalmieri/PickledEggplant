@@ -9,14 +9,14 @@
 <table>
 <tr><th>Test</th><th># Passed</th><th># Skipped</th><th># Retried</th><th># Failed</th><th>Time (ms)</th><th>Included Groups</th><th>Excluded Groups</th></tr>
 <tr><th colspan="8">Cucumber Test Suite</th></tr>
-<tr><td><a href="#t0">Cucumber Test</a></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">21,237</td><td></td><td></td></tr>
+<tr><td><a href="#t0">Cucumber Test</a></td><td class="num">0</td><td class="num">0</td><td class="num">0</td><td class="num attn">1</td><td class="num">28.319</td><td></td><td></td></tr>
 </table>
-<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Cucumber Test Suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Cucumber Test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">com.olenickglobal.TestNGCucumberTests</td><td><a href="#m0">runScenario</a></td><td rowspan="1">1701109149017</td><td rowspan="1">21034</td></tr></tbody>
+<table id='summary'><thead><tr><th>Class</th><th>Method</th><th>Start</th><th>Time (ms)</th></tr></thead><tbody><tr><th colspan="4">Cucumber Test Suite</th></tr></tbody><tbody id="t0"><tr><th colspan="4">Cucumber Test &#8212; failed</th></tr><tr class="failedeven"><td rowspan="1">com.olenickglobal.TestNGCucumberTests</td><td><a href="#m0">runScenario</a></td><td rowspan="1">1703876665245</td><td rowspan="1">28110</td></tr></tbody>
 </table>
-<h2>Cucumber Test</h2><h3 id="m0">com.olenickglobal.TestNGCucumberTests#runScenario</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>&quot;Launch &quot;word&quot;&quot;</td><td>&quot;Application&quot;</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">com.olenickglobal.exceptions.OpeningExcelInReport: Error occurred while loading into excel inside the RPVReporter. Check file integrity.
-	at listeners.RPVExcelReporter.reportEvent(RPVExcelReporter.java:87)
-	at listeners.ReporterCaller.generateReports(ReporterCaller.java:28)
-	at com.olenickglobal.ListenerManager.lambda$setEventPublisher$5(ListenerManager.java:24)
+<h2>Cucumber Test</h2><h3 id="m0">com.olenickglobal.TestNGCucumberTests#runScenario</h3><table class="result"><tr class="param"><th>Parameter #1</th><th>Parameter #2</th></tr><tr class="param stripe"><td>&quot;Check out check in Word &quot;Document for searches&quot;&quot;</td><td>&quot;Application&quot;</td></tr><tr><th colspan="2">Exception</th></tr><tr><td colspan="2"><div class="stacktrace">com.olenickglobal.exceptions.OpeningExcelInReport: Error occurred while loading into excel inside the RPVReporter. Check file integrity.
+	at com.olenickglobal.listeners.RPVExcelReporter.reportEvent(RPVExcelReporter.java:87)
+	at com.olenickglobal.listeners.ReporterCaller.generateReports(ReporterCaller.java:29)
+	at com.olenickglobal.ListenerManager.lambda$setEventPublisher$5(ListenerManager.java:25)
 	at io.cucumber.core.eventbus.AbstractEventPublisher.send(AbstractEventPublisher.java:51)
 	at io.cucumber.core.eventbus.AbstractEventBus.send(AbstractEventBus.java:12)
 	at io.cucumber.core.runtime.SynchronizedEventBus.send(SynchronizedEventBus.java:47)
@@ -32,11 +32,10 @@
 	at io.cucumber.testng.AbstractTestNGCucumberTests.runScenario(AbstractTestNGCucumberTests.java:35)
 	at java.base/java.util.ArrayList.forEach(ArrayList.java:1511)
 	at com.olenickglobal.Main.main(Main.java:21)
-Caused by: java.io.FileNotFoundException: C:\Users\ielia\dvlp\PickledEggplant\src\test\resources\test.xlsx (The system cannot find the file specified)
-	at java.base/java.io.FileInputStream.open0(Native Method)
-	at java.base/java.io.FileInputStream.open(FileInputStream.java:216)
-	at java.base/java.io.FileInputStream.&lt;init&gt;(FileInputStream.java:157)
-	at listeners.RPVExcelReporter.reportEvent(RPVExcelReporter.java:75)
+Caused by: org.apache.poi.EmptyFileException: The supplied file was empty (zero bytes long)
+	at org.apache.poi.ss.usermodel.WorkbookFactory.create(WorkbookFactory.java:218)
+	at org.apache.poi.ss.usermodel.WorkbookFactory.create(WorkbookFactory.java:185)
+	at com.olenickglobal.listeners.RPVExcelReporter.reportEvent(RPVExcelReporter.java:75)
 	... 39 more
 ... Removed 22 stack frames</div></td></tr></table><p class="totop"><a href="#summary">back to summary</a></p>
 </body>
