@@ -2,6 +2,13 @@ package com.olenickglobal.entities;
 
 import com.olenickglobal.configuration.ConfigReader;
 import com.olenickglobal.elements.ScreenElement;
+import com.olenickglobal.elements.events.Event;
+import com.olenickglobal.elements.events.EventEmitter;
+import com.olenickglobal.elements.events.EventListener;
+import com.olenickglobal.elements.events.EventType;
+import com.olenickglobal.elements.events.SaveScreenshotData;
+import com.olenickglobal.elements.events.SelectMainBoundsData;
+import com.olenickglobal.elements.events.TypingData;
 import com.olenickglobal.exceptions.SUTRobotException;
 import com.olenickglobal.exceptions.SavingScreenCaptureException;
 import com.olenickglobal.utils.FileUtils;
@@ -12,8 +19,9 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.time.LocalDateTime;
 
-// FIXME: Try to use Screen to access SikuliX instead of it directly.
+// FIXME: Try to use Screen to access SikuliX instead of it directly. Can we remove this Robot instance too?
 public class SUT {
     private static volatile SUT instance;
 
@@ -22,11 +30,13 @@ public class SUT {
         System.setProperty("sun.java2d.uiScale.enabled", "false");
     }
 
+    protected final EventEmitter eventEmitter;
     // TODO: See if it would be better to move the use of RPA into Screen.
-    private final Robot robot;
+    protected final Robot robot;
     // TODO: Multiple screens?
-    protected Screen screen;
-    protected volatile ScreenElement mainParentElement;
+    protected final Screen screen;
+
+    protected volatile ScreenElement mainParentBoundariesElement;
 
     public static SUT getInstance() {
         if (instance == null) {
@@ -41,27 +51,67 @@ public class SUT {
 
     protected SUT() throws SUTRobotException {
         try {
+            eventEmitter = new EventEmitter();
             robot = new Robot();
-            screen = new Screen();
+            screen = new Screen(this);
         } catch (AWTException e) {
             throw new SUTRobotException(e);
         }
+    }
+
+    /**
+     * Add an event listener.
+     * @param type Event type.
+     * @param listener Event listener for the event type.
+     * @return True if the listener was added, false otherwise.
+     */
+    public boolean addEventListener(EventType type, EventListener<?, ?> listener) {
+        return eventEmitter.addEventListener(type, listener);
+    }
+
+    public ScreenElement getMainParentBoundariesElement() {
+        return mainParentBoundariesElement;
     }
 
     public Screen getScreen() {
         return screen;
     }
 
-    // TODO: Call this differently?
-    public ScreenElement getMainParentElement() {
-        if (mainParentElement == null) {
+    /**
+     * Remove a pre-existing event listener.
+     * @param type Event type.
+     * @param listener Event listener for the event type.
+     * @return True if the listener was listening for events, false otherwise.
+     */
+    public boolean removeEventListener(EventType type, EventListener<?, ?> listener) {
+        return eventEmitter.removeEventListener(type, listener);
+    }
+
+    public ScreenElement selectMainParentBoundariesElement() {
+        if (mainParentBoundariesElement == null) {
             synchronized (this) {
-                if (mainParentElement == null) {
-                    mainParentElement = screen.interactivelyCreateElement();
+                if (mainParentBoundariesElement == null) {
+                    EventType endEventType = EventType.AFTER_SELECT_MAIN_BOUNDS;
+                    ScreenElement created = null;
+                    Rectangle rectangle = null;
+                    RuntimeException error = null;
+                    LocalDateTime startTime = LocalDateTime.now();
+                    eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_SELECT_MAIN_BOUNDS, new SelectMainBoundsData(screen)));
+                    try {
+                        created = screen.interactivelyCreateElement();
+                        rectangle = created.getLastMatchLocation();
+                        mainParentBoundariesElement = created;
+                    } catch (RuntimeException exception) { // TODO: Check this exception type.
+                        endEventType = EventType.SELECT_MAIN_BOUNDS_ERROR;
+                        throw error = exception;
+                    } finally {
+                        eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType,
+                                new SelectMainBoundsData(screen, rectangle, created), error));
+                    }
                 }
             }
         }
-        return mainParentElement;
+        return mainParentBoundariesElement;
     }
 
     public File saveFullScreenshot(String filename) {
@@ -69,25 +119,44 @@ public class SUT {
     }
 
     public File saveScreenshot(String filename) {
-        return saveScreenshot(mainParentElement == null ? screen.getBounds() : mainParentElement.getLastMatchLocation(), filename);
+        return saveScreenshot(mainParentBoundariesElement == null ? screen.getBounds()
+                : mainParentBoundariesElement.getLastMatchLocation(), filename);
     }
 
     public File saveScreenshot(Rectangle area, String filename) throws SavingScreenCaptureException {
         String fullPath = ConfigReader.getInstance().getScreenshotName(filename);
         File file;
+        EventType endEventType = EventType.AFTER_SAVE_SCREENSHOT;
+        BufferedImage image = null;
+        SavingScreenCaptureException error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_SAVE_SCREENSHOT, new SaveScreenshotData(area, filename)));
         try {
-            BufferedImage image = screen.capture(area);
+            image = screen.capture(area);
             file = FileUtils.createFile(fullPath);
             ImageIO.write(image, "png", file);
         } catch (IOException e) {
-            throw new SavingScreenCaptureException("There was a failure saving the following image: " + filename, e);
+            endEventType = EventType.SAVE_SCREENSHOT_ERROR;
+            throw error = new SavingScreenCaptureException("There was a failure saving the following image: " + filename, e);
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new SaveScreenshotData(area, image, filename), error));
         }
         return file;
     }
 
     public void typeText(String text) throws FindFailed, InterruptedException {
-        // TODO: Should we move this to the Screen class?
-        screen.type(text);
+        EventType endEventType = EventType.AFTER_TYPING;
+        RuntimeException error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_TYPING, new TypingData(text)));
+        try {
+            screen.type(text);
+        } catch (RuntimeException throwable) { // TODO: Check.
+            endEventType = EventType.TYPING_ERROR;
+            throw error = throwable;
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new TypingData(text), error));
+        }
     }
 
     public void sleep(long  seconds) throws InterruptedException {
