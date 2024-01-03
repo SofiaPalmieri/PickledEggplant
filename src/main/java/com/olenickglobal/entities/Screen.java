@@ -466,6 +466,7 @@ public class Screen {
         type(text, 0);
     }
 
+    // FIXME: Add events to this method.
     public void type(String text, int modifiers) {
         sikuliXScreen.type(text, modifiers);
     }
