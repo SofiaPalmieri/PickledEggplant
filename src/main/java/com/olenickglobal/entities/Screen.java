@@ -330,6 +330,7 @@ public class Screen {
                 List<Word> ocrWords = tesseract.getWords(fullScreen, ITessAPI.TessPageIteratorLevel.RIL_WORD);
                 matchRect = getTextMatch(null, words, ocrWords);
                 if (matchRect != null) {
+                    matchRect = new Rectangle(matchRect.x + searchArea.x, matchRect.y + searchArea.y, matchRect.width, matchRect.height);
                     return matchRect;
                 }
                 if (System.nanoTime() - timeoutNanos > OCR_POLLING_TIME_NS) {
