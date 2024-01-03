@@ -2,6 +2,20 @@ package com.olenickglobal.entities;
 
 import com.olenickglobal.configuration.ConfigReader;
 import com.olenickglobal.elements.RectangleElement;
+import com.olenickglobal.elements.events.CaptureData;
+import com.olenickglobal.elements.events.ClickData;
+import com.olenickglobal.elements.events.ClickData.ClickActionType;
+import com.olenickglobal.elements.events.DragData;
+import com.olenickglobal.elements.events.Event;
+import com.olenickglobal.elements.events.EventEmitter;
+import com.olenickglobal.elements.events.EventListener;
+import com.olenickglobal.elements.events.EventType;
+import com.olenickglobal.elements.events.HoverData;
+import com.olenickglobal.elements.events.ImageLocator;
+import com.olenickglobal.elements.events.InteractiveRectCreateData;
+import com.olenickglobal.elements.events.InteractiveRectSelectData;
+import com.olenickglobal.elements.events.LocatingData;
+import com.olenickglobal.elements.events.OCRData;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 import com.olenickglobal.exceptions.InteractionFailedException;
 import com.olenickglobal.exceptions.NotImplementedYetError;
@@ -19,10 +33,11 @@ import org.sikuli.script.Match;
 import org.sikuli.script.Pattern;
 import org.sikuli.script.Region;
 
-import javax.swing.JOptionPane;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
 
@@ -56,23 +71,51 @@ public class Screen {
         V apply(T t, U u) throws FindFailed;
     }
 
+    protected final EventEmitter eventEmitter;
     protected final org.sikuli.script.Screen sikuliXScreen;
+    protected final SUT sut;
 
-    public Screen() {
+    public Screen(SUT sut) {
+        eventEmitter = new EventEmitter();
+        this.sut = sut;
         // TODO: Allow for different screens and unions.
         sikuliXScreen = new org.sikuli.script.Screen();
     }
 
+    /**
+     * Add an event listener.
+     *
+     * @param type     Event type.
+     * @param listener Event listener for the event type.
+     * @return True if the listener was added, false otherwise.
+     */
+    public boolean addEventListener(EventType type, EventListener<?, ?> listener) {
+        return eventEmitter.addEventListener(type, listener);
+    }
+
     public BufferedImage capture(int x, int y, int width, int height) {
-        return sikuliXScreen.capture(x, y, width, height).getImage();
+        return capture(new Rectangle(x, y, width, height));
     }
 
     public BufferedImage capture(Rectangle rectangle) {
-        return sikuliXScreen.capture(rectangle).getImage();
+        EventType endEventType = EventType.AFTER_CAPTURE;
+        BufferedImage image = null;
+        RuntimeException error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_CAPTURE, new CaptureData(rectangle)));
+        try {
+            image = sikuliXScreen.capture(rectangle).getImage();
+        } catch (RuntimeException e) {
+            endEventType = EventType.CAPTURE_ERROR;
+            throw error = e;
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new CaptureData(rectangle, image), error));
+        }
+        return image;
     }
 
     public BufferedImage captureFullScreen() {
-        return sikuliXScreen.capture().getImage();
+        return capture(sikuliXScreen.getRect());
     }
 
     public void click(Point target) throws InteractionFailedException {
@@ -84,7 +127,7 @@ public class Screen {
     }
 
     public void click(Point target, int modifiers, double delay) throws InteractionFailedException {
-        performDelayedClickAction(sikuliXScreen::click, target, modifiers, delay);
+        performDelayedClickAction(ClickActionType.LEFT_CLICK, sikuliXScreen::click, target, modifiers, delay);
     }
 
     public void doubleClick(Point target) throws InteractionFailedException {
@@ -96,7 +139,7 @@ public class Screen {
     }
 
     public void doubleClick(Point target, int modifiers, double delay) throws InteractionFailedException {
-        performDelayedClickAction(sikuliXScreen::doubleClick, target, modifiers, delay);
+        performDelayedClickAction(ClickActionType.DOUBLE_CLICK, sikuliXScreen::doubleClick, target, modifiers, delay);
     }
 
     public void dragDrop(Point origin, Point destination) throws InteractionFailedException {
@@ -108,7 +151,14 @@ public class Screen {
     }
 
     public void dragDrop(Point origin, int modifiers, Point destination, double delayMouseDown, double delayDrag, double delayDrop) throws InteractionFailedException {
-        if (modifiers != 0) { throw new NotImplementedYetError(); }
+        if (modifiers != 0) {
+            throw new NotImplementedYetError();
+        }
+        EventType endEventType = EventType.AFTER_DRAG_DROP;
+        RuntimeException error = null;
+        DragData eventData = new DragData(modifiers, origin, destination, delayMouseDown, delayDrag, delayDrop);
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_DRAG_DROP, eventData));
         try {
             // Settings.DelayBeforeDrag: specifies the waiting time after mouse down at the source location as a decimal value (seconds).
             // Settings.DelayBeforeDrop: specifies the waiting time before mouse up at the target location as a decimal value (seconds).
@@ -121,12 +171,14 @@ public class Screen {
             }
         } catch (FindFailed e) {
             // TODO: This should never happen. See what to do with this exception.
-            throw new RuntimeException(e);
+            endEventType = EventType.DRAG_DROP_ERROR;
+            throw error = new RuntimeException(e);
         } finally {
             // TODO: Check these are reset as the usual interaction with SikuliX
             Settings.DelayBeforeMouseDown = Settings.DelayValue; // This is getting reset on normal action. We only make sure it'll do the same on failure.
             Settings.DelayBeforeDrag = Settings.DelayValue; // This is getting reset on normal action. We only make sure it'll do the same on failure.
             Settings.DelayBeforeDrop = Settings.DelayValue; // This is getting reset on normal action. We only make sure it'll do the same on failure.
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, eventData, error));
         }
     }
 
@@ -138,105 +190,167 @@ public class Screen {
         return internalFindImage(timeout, null, image, minSimilarity);
     }
 
-    public Rectangle internalFindImage(double timeout, Rectangle area, BufferedImage image, double minSimilarity) throws ImageNotFoundException, FindFailed {
+    public Rectangle internalFindImage(double timeout, Rectangle area, BufferedImage image, double minSimilarity) throws ImageNotFoundException {
+        EventType endEventType = EventType.AFTER_LOCATING;
+        BufferedImage bestMatch = null;
+        Rectangle matchRect = null;
+        RuntimeException error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_LOCATING, new LocatingData<>(timeout,
+                new ImageLocator(image, minSimilarity), area)));
+        try {
             Match match = getRegion(area).wait(asPattern(image, minSimilarity), timeout);
             if (match == null || !match.isValid()) {
-                throw new ImageNotFoundException("Unable to find image: Match invalid.");
+                endEventType = EventType.LOCATING_ERROR;
+                throw error = new ImageNotFoundException("Unable to find image: Match invalid.");
             }
-            return match.getRect();
-
+            bestMatch = match.getImage().get();
+            return matchRect = match.getRect();
+        } catch (FindFailed e) {
+            endEventType = EventType.LOCATING_ERROR;
+            throw error = new ImageNotFoundException(e);
+        } catch (RuntimeException e) { // SikuliX throws this. Blame them.
+            endEventType = EventType.LOCATING_ERROR;
+            String message = e.getMessage();
+            if (message != null && message.startsWith("SikuliX:")) {
+                throw error = new ImageNotFoundException(e);
+            }
+            throw error = e;
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new LocatingData<>(timeout,
+                    new ImageLocator(image, minSimilarity, bestMatch), area, null, matchRect), error));
+        }
     }
 
     public Rectangle internalFindImage(double timeout, String path, double minSimilarity) throws ImageNotFoundException, FindFailed {
         return internalFindImage(timeout, null, path, minSimilarity);
     }
 
-    public Rectangle internalFindImage(double timeout, Rectangle area, String path, double minSimilarity) throws ImageNotFoundException, FindFailed {
+    public Rectangle internalFindImage(double timeout, Rectangle area, String path, double minSimilarity) throws ImageNotFoundException {
+        EventType endEventType = EventType.AFTER_LOCATING;
+        BufferedImage bestMatch = null;
+        Rectangle matchRect = null;
+        Throwable error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_LOCATING, new LocatingData<>(timeout,
+                new ImageLocator(path, minSimilarity), area)));
+        try {
             Match match;
             File file = new File(path);
             if (!file.exists()) {
-                throw new ImageNotFoundException("File '" + path + "' does not exist.");
+                throw (ImageNotFoundException) (error = new ImageNotFoundException("File '" + path + "' does not exist."));
             }
             Region region = getRegion(area);
             if (file.isDirectory()) {
                 File[] files = file.listFiles();
                 if (files == null || files.length == 0) {
-                    throw new ImageNotFoundException("Directory '" + path + "' is empty.");
+                    throw (ImageNotFoundException) (error = new ImageNotFoundException("Directory '" + path + "' is empty."));
                 }
                 // TODO: Filter for actual images.
                 List<Object> imageFiles = Arrays.stream(files).filter(File::isFile).filter(File::canRead)
                         .map(f -> (Object) asPattern(f, minSimilarity)).toList();
                 if (imageFiles.isEmpty()) {
-                    throw new ImageNotFoundException("Directory '" + path + "' does not contain any images.");
+                    throw (ImageNotFoundException) (error = new ImageNotFoundException("Directory '" + path + "' does not contain any images."));
                 }
                 match = region.waitBestList(timeout, imageFiles);
             } else {
                 match = region.wait(asPattern(file, minSimilarity), timeout);
             }
             if (match == null || !match.isValid()) {
-                throw new ImageNotFoundException("Unable to find '" + path + "': Match invalid.");
+                throw (ImageNotFoundException) (error = new ImageNotFoundException("Unable to find '" + path + "': Match invalid."));
             }
-            return match.getRect();
-
+            bestMatch = match.getImage().get();
+            return matchRect = match.getRect();
+        } catch (FindFailed e) {
+            endEventType = EventType.LOCATING_ERROR;
+            throw (ImageNotFoundException) (error = new ImageNotFoundException(e));
+        } catch (RuntimeException e) { // SikuliX throws this. Blame them.
+            endEventType = EventType.LOCATING_ERROR;
+            String message = e.getMessage();
+            if (message != null && message.startsWith("SikuliX:")) {
+                throw (ImageNotFoundException) (error = new ImageNotFoundException(e));
+            }
+            throw (RuntimeException) (error = e);
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new LocatingData<>(timeout,
+                    new ImageLocator(path, minSimilarity, bestMatch), area, null, matchRect), error));
+        }
     }
 
-    public Rectangle findImage(double timeout, Rectangle area, String path, double minSimilarity) throws FindFailed, InterruptedException {
-        try{
-           return this.internalFindImage(timeout,area,path, minSimilarity);
-        }catch(FindFailed e){
+    // FIXME: Make this emit events instead of the internalFindImage methods.
+    // FIXME: Make this iterative.
+    public Rectangle findImage(double timeout, Rectangle area, String path, double minSimilarity) throws ImageNotFoundException {
+        try {
+            return this.internalFindImage(timeout, area, path, minSimilarity);
+        } catch (ImageNotFoundException e) {
             String[] options = new String[]{"Try again", "Cancel"};
-
-            int optionPane = JOptionPane.showOptionDialog(null,
+            int optionPane = JOptionPane.showOptionDialog(
+                    null,
                     "Image " + path + " was not found",
                     "Find Failed",
                     JOptionPane.OK_CANCEL_OPTION,
                     JOptionPane.INFORMATION_MESSAGE,
                     null,
                     options,
-                    options[0]);
-
-            if (optionPane == 0){
+                    options[0]
+            );
+            if (optionPane == 0) {
                 Settings.setImageCache(0);
                 ImagePath.reset(path);
-                Thread.sleep(2000);
-                this.findImage(timeout,area,path, minSimilarity);
+                linger(2.0); // TODO: See why we need this.
+                this.findImage(timeout, area, path, minSimilarity);
                 Settings.setImageCache(64);
-                return this.internalFindImage(timeout,area,path, minSimilarity);
-
-            }  else{
-                throw  new FindFailed("Find Failed");
+                return this.internalFindImage(timeout, area, path, minSimilarity);
+            } else {
+                throw new ImageNotFoundException("Find Failed");
             }
-
         }
     }
 
-    public Rectangle internalFindText(double timeout, String text) {
-        return internalFindText(timeout, null, text);
+    public Rectangle findText(double timeout, String text) {
+        return findText(timeout, null, text);
     }
 
     @SuppressWarnings("BusyWait") // No point of using wait-notify here.
-    public Rectangle internalFindText(double timeout, Rectangle area, String text) {
-        // TODO: Check if this can be done more accurately.
-        boolean found = false;
-        List<String> words = List.of(text.split(" "));
-        long timeoutNanos = System.nanoTime() + (long)(timeout * 1000_000_000);
-        Rectangle searchArea = area == null ? getBounds() : area;
-        do {
-            BufferedImage fullScreen = capture(searchArea);
-            ITesseract tesseract = ConfigReader.getInstance().getTesseract();
-            List<Word> ocrWords = tesseract.getWords(fullScreen, ITessAPI.TessPageIteratorLevel.RIL_WORD);
-            Rectangle rect = getTextMatch(null, words, ocrWords);
-            if (rect != null) {
-                return rect;
-            }
-            if (System.nanoTime() - timeoutNanos > OCR_POLLING_TIME_NS) {
-                try {
-                    Thread.sleep(OCR_POLLING_TIME_MS);
-                } catch (InterruptedException ignore) {
+    public Rectangle findText(double timeout, Rectangle area, String text) {
+        EventType endEventType = EventType.AFTER_LOCATING;
+        Rectangle matchRect = null;
+        Throwable error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_LOCATING, new LocatingData<>(timeout, text, area)));
+        try {
+            // TODO: Check if this can be done more accurately.
+            boolean found = false;
+            List<String> words = List.of(text.split(" "));
+            long timeoutNanos = System.nanoTime() + (long) (timeout * 1000_000_000);
+            Rectangle searchArea = area == null ? getBounds() : area;
+            do {
+                BufferedImage fullScreen = capture(searchArea);
+                ITesseract tesseract = ConfigReader.getInstance().getTesseract();
+                List<Word> ocrWords = tesseract.getWords(fullScreen, ITessAPI.TessPageIteratorLevel.RIL_WORD);
+                matchRect = getTextMatch(null, words, ocrWords);
+                if (matchRect != null) {
+                    return matchRect;
                 }
-            }
-        } while (!found && System.nanoTime() < timeoutNanos);
-        throw new TextNotFoundException(text);
+                if (System.nanoTime() - timeoutNanos > OCR_POLLING_TIME_NS) {
+                    try {
+                        Thread.sleep(OCR_POLLING_TIME_MS);
+                    } catch (InterruptedException ignore) {
+                        // TODO: Should we enforce sleeping here?
+                    }
+                }
+            } while (!found && System.nanoTime() < timeoutNanos);
+            throw new TextNotFoundException(text);
+        } catch (RuntimeException exception) {
+            throw (RuntimeException) (error = exception);
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new LocatingData<>(timeout,
+                    text, area, null, matchRect), error));
+        }
+    }
+
+    public SUT getSUT() {
+        return sut;
     }
 
     public String getText() {
@@ -244,12 +358,19 @@ public class Screen {
     }
 
     public String getText(Rectangle rectangle) throws OCRException {
+        EventType endEventType = EventType.AFTER_OCR;
+        String text = null;
+        OCRException error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_OCR, new OCRData(rectangle)));
         ITesseract tesseract = ConfigReader.getInstance().getTesseract();
-        String text;
         try {
             text = tesseract.doOCR(capture(rectangle));
         } catch (TesseractException e) {
-            throw new OCRException(e);
+            endEventType = EventType.OCR_ERROR;
+            throw error = new OCRException(e);
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new OCRData(rectangle, text), error));
         }
         return text;
     }
@@ -263,22 +384,70 @@ public class Screen {
     }
 
     public void hover(Point target, int modifiers, double lingerTime) throws InteractionFailedException {
-        if (modifiers != 0) { throw new NotImplementedYetError(); }
+        if (modifiers != 0) {
+            throw new NotImplementedYetError();
+        }
+        EventType endEventType = EventType.AFTER_HOVER;
+        InteractionFailedException error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_HOVER, new HoverData(modifiers, target, lingerTime)));
         try {
             sikuliXScreen.hover(new Location(target));
             linger(lingerTime);
         } catch (FindFailed e) {
             // TODO: This should never happen. See what to do with this exception.
-            throw new RuntimeException(e);
+            endEventType = EventType.HOVER_ERROR;
+            throw error = new InteractionFailedException(e);
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new HoverData(modifiers, target, lingerTime), error));
         }
     }
 
-    public RectangleElement interactivelyCreateElement() {
-        return new RectangleElement(interactivelySelectRegion("Click and drag to select region of interaction"), true);
+    public RectangleElement interactivelyCreateElement() throws InteractionFailedException {
+        EventType endEventType = EventType.AFTER_INTERACT_RECT_CREATE;
+        InteractionFailedException error = null;
+        Rectangle rectangle = null;
+        RectangleElement element = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_INTERACT_RECT_CREATE, new InteractiveRectCreateData(this)));
+        try {
+            rectangle = interactivelySelectRegion("Click and drag to select region of interaction");
+            element = new RectangleElement(rectangle, true);
+        } catch (InteractionFailedException e) {
+            endEventType = EventType.INTERACT_RECT_CREATE_ERROR;
+            throw error = e;
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new InteractiveRectCreateData(this, rectangle, element), error));
+        }
+        return element;
     }
 
-    public Rectangle interactivelySelectRegion(String selectionMessage) {
-        return sikuliXScreen.selectRegion(selectionMessage).getRect();
+    public Rectangle interactivelySelectRegion(String selectionMessage) throws InteractionFailedException {
+        EventType endEventType = EventType.AFTER_INTERACT_RECT_SELECT;
+        InteractionFailedException error = null;
+        Rectangle rectangle = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_INTERACT_RECT_SELECT, new InteractiveRectSelectData(this)));
+        try {
+            rectangle = sikuliXScreen.selectRegion(selectionMessage).getRect();
+        } catch (RuntimeException e) { // TODO: Check this
+            endEventType = EventType.INTERACT_RECT_SELECT_ERROR;
+            throw error = new InteractionFailedException(e);
+        } finally {
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new InteractiveRectSelectData(this, rectangle), error));
+        }
+        return rectangle;
+    }
+
+    /**
+     * Remove a pre-existing event listener.
+     *
+     * @param type     Event type.
+     * @param listener Event listener for the event type.
+     * @return True if the listener was listening for events, false otherwise.
+     */
+    public boolean removeEventListener(EventType type, EventListener<?, ?> listener) {
+        return eventEmitter.removeEventListener(type, listener);
     }
 
     public void rightClick(Point target) {
@@ -290,31 +459,15 @@ public class Screen {
     }
 
     public void rightClick(Point target, int modifiers, double delay) {
-        performDelayedClickAction(sikuliXScreen::rightClick, target, modifiers, delay);
+        performDelayedClickAction(ClickActionType.RIGHT_CLICK, sikuliXScreen::rightClick, target, modifiers, delay);
     }
 
-    public void type(Point target, String text) throws FindFailed {
-        sikuliXScreen.type(target,text);
+    public void type(String text) {
+        type(text, 0);
     }
 
-    public void type(String text) throws FindFailed {
-        sikuliXScreen.type(text);
-    }
-
-    public void type(Point target, String text, int modifiers) throws FindFailed {
-        sikuliXScreen.type(target,text,modifiers);
-    }
-
-    public void type(Point target, String text, String modifiers) throws FindFailed {
-        sikuliXScreen.type(target,text,modifiers);
-    }
-
-    public void type(String text, String modifiers) throws FindFailed {
-        sikuliXScreen.type(text,modifiers);
-    }
-
-    public void wait(Double seconds) throws FindFailed {
-        sikuliXScreen.wait(seconds);
+    public void type(String text, int modifiers) {
+        sikuliXScreen.type(text, modifiers);
     }
 
     /*
@@ -418,7 +571,13 @@ public class Screen {
         }
     }
 
-    protected void performDelayedClickAction(BiFunctionWithFF<Location, Integer, Integer> method, Point target, int modifiers, double delay) throws InteractionFailedException {
+    protected void performDelayedClickAction(ClickActionType clickAction,
+                                             BiFunctionWithFF<Location, Integer, Integer> method, Point target,
+                                             int modifiers, double delay) throws InteractionFailedException {
+        EventType endEventType = EventType.AFTER_CLICK;
+        RuntimeException error = null;
+        LocalDateTime startTime = LocalDateTime.now();
+        eventEmitter.emit(new Event<>(startTime, EventType.BEFORE_CLICK, new ClickData(clickAction, modifiers, target, delay)));
         try {
             // Settings.ClickDelay: Delay between the mouse down and up in seconds as 0.nnn. This only applies to the next click action and is then reset to 0 again. A value > 1 is cut to 1.0 (max delay of 1 second).
             Settings.ClickDelay = delay;
@@ -427,9 +586,11 @@ public class Screen {
             }
         } catch (FindFailed e) {
             // TODO: This should never happen. See what to do with this exception.
-            throw new RuntimeException(e);
+            endEventType = EventType.CLICK_ERROR;
+            throw error = new RuntimeException(e);
         } finally {
             Settings.ClickDelay = 0; // This is getting reset on normal action. We only make sure it'll do the same on failure.
+            eventEmitter.emit(new Event<>(startTime, LocalDateTime.now(), endEventType, new ClickData(clickAction, modifiers, target, delay), error));
         }
     }
 }
