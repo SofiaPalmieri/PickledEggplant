@@ -6,6 +6,7 @@ import com.olenickglobal.elements.events.LocatingData;
 import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
+import formatting.ElementFormatter;
 
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -53,5 +54,14 @@ public class TextElement extends ScreenElement {
                     text, parentArea, this, rectangle), error));
         }
         return rectangle;
+    }
+
+    @Override
+    public String formatBy(ElementFormatter elementFormatter) {
+        return elementFormatter.formatTextElement(this);
+    }
+
+    public String getElementText() {
+        return this.text;
     }
 }

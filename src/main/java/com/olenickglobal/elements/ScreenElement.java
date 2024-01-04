@@ -17,6 +17,7 @@ import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 import com.olenickglobal.exceptions.InteractionFailedException;
 import com.olenickglobal.utils.FunctionWithException;
+import formatting.ElementFormatter;
 
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -920,4 +921,6 @@ public abstract class ScreenElement {
         lastMatchLocation = rectangle;
         return this;
     }
+
+    public abstract String formatBy(ElementFormatter elementFormatter);
 }

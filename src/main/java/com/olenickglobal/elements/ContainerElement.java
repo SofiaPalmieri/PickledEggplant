@@ -2,6 +2,7 @@ package com.olenickglobal.elements;
 
 import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
+import formatting.ElementFormatter;
 
 import java.awt.*;
 import java.util.Arrays;
@@ -40,5 +41,14 @@ public class ContainerElement extends ScreenElement {
         Rectangle rectangle = new Rectangle(x, y, w, h);
         setLastMatchLocation(rectangle);
         return rectangle;
+    }
+
+    @Override
+    public String formatBy(ElementFormatter elementFormatter) {
+        return elementFormatter.formatContainerElement(this);
+    }
+
+    public List<ScreenElement> getContents(){
+        return this.contents;
     }
 }
