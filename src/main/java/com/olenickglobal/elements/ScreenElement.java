@@ -19,10 +19,12 @@ import com.olenickglobal.exceptions.InteractionFailedException;
 import com.olenickglobal.utils.FunctionWithException;
 import formatting.ElementFormatter;
 
-import java.awt.*;
+import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.InputEvent;
 import java.awt.image.BufferedImage;
 import java.time.LocalDateTime;
+import java.util.function.BiConsumer;
 
 public abstract class ScreenElement {
     protected final EventEmitter eventEmitter;
@@ -177,7 +179,7 @@ public abstract class ScreenElement {
      * @throws InteractionFailedException when interaction with the screen fails.
      */
     public ScreenElement click(double timeout, int modifiers, Offset offset, double delay) throws ElementNotFoundException, InteractionFailedException {
-        return performClickAction(ClickActionType.LEFT_CLICK, timeout, modifiers, offset, delay);
+        return performClickAction(ClickActionType.LEFT_CLICK, screen::click, timeout, modifiers, offset, delay);
     }
 
     /**
@@ -283,7 +285,7 @@ public abstract class ScreenElement {
      * @throws InteractionFailedException when interaction with the screen fails.
      */
     public ScreenElement doubleClick(final double timeout, final int modifiers, final Offset offset, final double delay) throws ElementNotFoundException, InteractionFailedException {
-        return performClickAction(ClickActionType.DOUBLE_CLICK, timeout, modifiers, offset, delay);
+        return performClickAction(ClickActionType.DOUBLE_CLICK, screen::doubleClick, timeout, modifiers, offset, delay);
     }
 
     /**
@@ -807,7 +809,7 @@ public abstract class ScreenElement {
      * @throws InteractionFailedException when interaction with the screen fails.
      */
     public ScreenElement rightClick(double timeout, int modifiers, Offset offset, double delay) throws ElementNotFoundException, InteractionFailedException {
-        return performClickAction(ClickActionType.RIGHT_CLICK, timeout, modifiers, offset, delay);
+        return performClickAction(ClickActionType.RIGHT_CLICK, screen::rightClick, timeout, modifiers, offset, delay);
     }
 
     /**
@@ -894,8 +896,9 @@ public abstract class ScreenElement {
     }
 
     @SuppressWarnings("unchecked")
-    protected ScreenElement performClickAction(final ClickActionType clickActionType, final double timeout,
-                                               final int modifiers, final Offset offset, final double delay)
+    protected ScreenElement performClickAction(final ClickActionType clickActionType, BiConsumer<Point, Integer> action,
+                                               final double timeout, final int modifiers, final Offset offset,
+                                               final double delay)
             throws ElementNotFoundException, InteractionFailedException {
         performAction(EventType.BEFORE_CLICK, EventType.AFTER_CLICK, EventType.CLICK_ERROR,
                 new Class[]{ElementNotFoundException.class, InteractionFailedException.class},
@@ -903,7 +906,7 @@ public abstract class ScreenElement {
                 (ClickData.ClickDataBuilder builder) -> {
                     Point target;
                     builder.withTarget(target = getTarget(timeout, offset)).withElementRectangle(getLastMatchLocation());
-                    screen.click(target, modifiers);
+                    action.accept(target, modifiers);
                     return null;
                 });
         return this;

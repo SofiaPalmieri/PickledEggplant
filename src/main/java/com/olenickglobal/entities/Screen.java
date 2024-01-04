@@ -16,6 +16,7 @@ import com.olenickglobal.elements.events.InteractiveRectCreateData;
 import com.olenickglobal.elements.events.InteractiveRectSelectData;
 import com.olenickglobal.elements.events.LocatingData;
 import com.olenickglobal.elements.events.OCRData;
+import com.olenickglobal.exceptions.ConfigurationError;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 import com.olenickglobal.exceptions.InteractionFailedException;
 import com.olenickglobal.exceptions.NotImplementedYetError;
@@ -25,6 +26,7 @@ import net.sourceforge.tess4j.ITessAPI;
 import net.sourceforge.tess4j.ITesseract;
 import net.sourceforge.tess4j.TesseractException;
 import net.sourceforge.tess4j.Word;
+import org.apache.poi.ss.formula.functions.T;
 import org.sikuli.basics.Settings;
 import org.sikuli.script.FindFailed;
 import org.sikuli.script.ImagePath;
@@ -40,6 +42,8 @@ import java.io.File;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
+import java.util.function.Function;
 
 /**
  * TODO: DELETE THIS COMMENT.
@@ -280,39 +284,80 @@ public class Screen {
     // FIXME: Make this emit events instead of the internalFindImage methods.
     // FIXME: Make this iterative.
     public Rectangle findImage(double timeout, Rectangle area, String path, double minSimilarity) throws ImageNotFoundException {
-        try {
-            return this.internalFindImage(timeout, area, path, minSimilarity);
-        } catch (ImageNotFoundException e) {
-            String[] options = new String[]{"Try again", "Cancel"};
-            int optionPane = JOptionPane.showOptionDialog(
-                    null,
-                    "Image " + path + " was not found",
-                    "Find Failed",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.INFORMATION_MESSAGE,
-                    null,
-                    options,
-                    options[0]
-            );
-            if (optionPane == 0) {
-                Settings.setImageCache(0);
-                ImagePath.reset(path);
-                linger(2.0); // TODO: See why we need this.
-                this.findImage(timeout, area, path, minSimilarity);
-                Settings.setImageCache(64);
+        if(ConfigReader.getInstance().<String>readConfig("EXECUTION_TYPE", ConfigReader.SupportedType.STRING).equals("DEBUG")){
+            try {
                 return this.internalFindImage(timeout, area, path, minSimilarity);
-            } else {
-                throw new ImageNotFoundException("Find Failed");
+            } catch (ImageNotFoundException e) {
+                String[] options = new String[]{"Try again", "Cancel"};
+                int optionPane = JOptionPane.showOptionDialog(
+                        null,
+                        "Image " + path + " was not found",
+                        "Find Failed",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        options,
+                        options[0]
+                );
+                if (optionPane == 0) {
+                    Settings.setImageCache(0);
+                    ImagePath.reset(path);
+                    linger(2.0); // TODO: See why we need this.
+                    this.findImage(timeout, area, path, minSimilarity);
+                    Settings.setImageCache(64);
+                    return this.internalFindImage(timeout, area, path, minSimilarity);
+                } else {
+                    throw new ImageNotFoundException("Find Failed");
+                }
             }
+
+        }else if(ConfigReader.getInstance().<String>readConfig("EXECUTION_TYPE", ConfigReader.SupportedType.STRING).equals("NORMAL")) {
+            return this.internalFindImage(timeout, area, path, minSimilarity);
+
         }
+        throw new ConfigurationError("EXECUTION_TYPE has to be set to NORMAL or DEBUG");
+
     }
 
-    public Rectangle findText(double timeout, String text) {
-        return findText(timeout, null, text);
+    public Rectangle findText(double timeout, Rectangle area, String text) throws TextNotFoundException {
+        if(ConfigReader.getInstance().<String>readConfig("EXECUTION_TYPE", ConfigReader.SupportedType.STRING).equals("DEBUG")) {
+            try {
+                return this.internalFindText(timeout, area, text);
+            } catch (TextNotFoundException e) {
+                String[] options = new String[]{"Try again", "Cancel"};
+                int optionPane = JOptionPane.showOptionDialog(
+                        null,
+                        "Text:  " + text + " was not found",
+                        "Find Failed",
+                        JOptionPane.OK_CANCEL_OPTION,
+                        JOptionPane.INFORMATION_MESSAGE,
+                        null,
+                        options,
+                        options[0]
+                );
+                if (optionPane == 0) {
+                    linger(2.0); // TODO: See why we need this.
+                    this.findText(timeout, area, text);
+                    return this.internalFindText(timeout, area, text);
+                } else {
+                    throw new TextNotFoundException("Find Failed");
+                }
+            }
+        }else if(ConfigReader.getInstance().<String>readConfig("EXECUTION_TYPE", ConfigReader.SupportedType.STRING).equals("NORMAL")) {
+            return this.internalFindText(timeout, area, text);
+
+        }
+        throw new ConfigurationError("EXECUTION_TYPE has to be set to NORMAL or DEBUG");
+
+    }
+
+
+    public Rectangle internalFindText(double timeout, String text) {
+        return internalFindText(timeout, null, text);
     }
 
     @SuppressWarnings("BusyWait") // No point of using wait-notify here.
-    public Rectangle findText(double timeout, Rectangle area, String text) {
+    public Rectangle internalFindText(double timeout, Rectangle area, String text) {
         EventType endEventType = EventType.AFTER_LOCATING;
         Rectangle matchRect = null;
         Throwable error = null;
