@@ -2,5 +2,6 @@
   "SYSTEM_NAME": "System",
   "SESSION_COLLECTION_ID": "SessionCollection",
   "SESSION_ID": "SESSION_ID",
-  "FEATURE_LIST_FILE": "src/test/resources/selected.features"
+  "FEATURE_LIST_FILE": "src/test/resources/selected.features",
+  "EXECUTION_TYPE": "DEBUG"
 }
