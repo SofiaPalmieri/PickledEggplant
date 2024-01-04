@@ -3,13 +3,12 @@
     "SCREENSHOTS_PATH": "test-output/screenshots",
     "IGNACIO_TESSERACT_DATA_PATH": "C:/Users/ielia/Downloads",
     "SOFIA_TESSERACT_DATA_PATH": "C:/Users/sofia/OneDrive - UTN.BA/PC/Qualitest/tessdata",
-    "TESSERACT_DATA_PATH": "C:/Users/sofia/OneDrive - UTN.BA/PC/Qualitest/tessdata",
+    "TESSERACT_DATA_PATH": "C:/tessdata",
     "TESTNG_XML_FILE": "src/test/resources/testng.xml",
     "REPORTERS": [
         {
             "type": "rpvexcel",
             "EXCEL_PATH": "test.xlsx"
         }
-    ],
-    "EXCEL_PATH": "test.xlsx"
+    ]
 }

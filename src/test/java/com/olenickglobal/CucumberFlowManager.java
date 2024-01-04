@@ -1,18 +1,11 @@
 package com.olenickglobal;
 
 import com.olenickglobal.entities.SUT;
+import com.olenickglobal.listeners.*;
 import io.cucumber.plugin.ConcurrentEventListener;
-import io.cucumber.plugin.event.EventPublisher;
-import io.cucumber.plugin.event.TestCaseFinished;
-import io.cucumber.plugin.event.TestCaseStarted;
-import io.cucumber.plugin.event.TestStepFinished;
-import io.cucumber.plugin.event.TestStepStarted;
-import com.olenickglobal.listeners.ReporterCaller;
-import com.olenickglobal.listeners.ScreenshotManager;
-import com.olenickglobal.listeners.StepManager;
-import com.olenickglobal.listeners.TestManager;
+import io.cucumber.plugin.event.*;
 
-public class ListenerManager implements ConcurrentEventListener {
+public class CucumberFlowManager implements ConcurrentEventListener {
     private static final TestResults testResults = new TestResults();
 
     @Override

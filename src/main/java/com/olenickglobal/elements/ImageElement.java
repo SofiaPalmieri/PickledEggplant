@@ -7,6 +7,7 @@ import com.olenickglobal.elements.events.LocatingData;
 import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
+import formatting.ElementFormatter;
 import org.sikuli.script.FindFailed;
 
 import java.awt.*;
@@ -90,5 +91,14 @@ public class ImageElement extends ScreenElement {
                     setLastMatchLocation(rectangle);
                     return rectangle;
                 });
+    }
+
+    @Override
+    public String formatBy(ElementFormatter elementFormatter) {
+        return elementFormatter.formatImageElement(this);
+    }
+
+    public String getName() {
+        return this.imageName;
     }
 }

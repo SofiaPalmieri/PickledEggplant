@@ -7,6 +7,7 @@ import com.olenickglobal.elements.events.LocatingData;
 import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
+import formatting.ElementFormatter;
 
 import java.awt.*;
 import java.time.LocalDateTime;
@@ -102,4 +103,10 @@ public class RectangleElement extends ScreenElement {
         }
         return rectangle;
     }
+
+    @Override
+    public String formatBy(ElementFormatter elementFormatter) {
+        return elementFormatter.formatRectangleElement(this);
+    }
+
 }

@@ -1,5 +1,7 @@
 package com.olenickglobal.elements.events;
 
+
+
 import java.time.Duration;
 import java.time.LocalDateTime;
 
@@ -26,4 +28,5 @@ public record Event<T, U extends Throwable>(LocalDateTime time, Duration duratio
     public Event(LocalDateTime startTime, LocalDateTime endTime, EventType type, T data, U error) {
         this(endTime, Duration.between(startTime, endTime), type, data, error);
     }
+
 }

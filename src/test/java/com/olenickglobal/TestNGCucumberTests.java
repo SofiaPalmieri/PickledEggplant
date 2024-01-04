@@ -12,7 +12,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 
-@CucumberOptions(objectFactory = SUTAwarePicoFactory.class, plugin = { "com.olenickglobal.ListenerManager" })
+@CucumberOptions(objectFactory = SUTAwarePicoFactory.class, plugin = { "com.olenickglobal.CucumberFlowManager", "com.olenickglobal.CucumberLogManager" })
 public class TestNGCucumberTests extends AbstractTestNGCucumberTests {
     @BeforeClass(alwaysRun = true)
     public void setUpClass(ITestContext context) {
