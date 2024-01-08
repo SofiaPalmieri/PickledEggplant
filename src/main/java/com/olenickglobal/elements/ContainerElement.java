@@ -2,7 +2,7 @@ package com.olenickglobal.elements;
 
 import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
-import formatting.ElementFormatter;
+import com.olenickglobal.formatting.ElementFormatter;
 
 import java.awt.*;
 import java.util.Arrays;

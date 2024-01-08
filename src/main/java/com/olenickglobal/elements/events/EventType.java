@@ -1,6 +1,6 @@
 package com.olenickglobal.elements.events;
 
-import formatting.EventFormatter;
+import com.olenickglobal.formatting.EventFormatter;
 
 
 import java.util.function.BiFunction;

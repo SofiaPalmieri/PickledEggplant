@@ -1,9 +1,8 @@
-package formatting;
+package com.olenickglobal.formatting;
 
 import com.olenickglobal.elements.events.*;
 
-
-public class EventFormatter {
+public class PickledEventFormatter implements EventFormatter {
 
     private final ElementFormatter elementFormatter = new ElementFormatter();
 
@@ -13,7 +12,6 @@ public class EventFormatter {
             T result = (T) data;
             return result;
         } catch (ClassCastException e) {
-            // Handle the exception, e.g., log it or return a default value
             System.out.println("Warning: ClassCastException occurred.");
             throw e;
         }
@@ -66,7 +64,7 @@ public class EventFormatter {
     }
 
     public String logBeforeDragFrom(Event<?,?> event) {
-            return "Starting drag...";
+        return "Starting drag...";
     }
 
     public String logAfterDragFrom(Event<?,?> event) {

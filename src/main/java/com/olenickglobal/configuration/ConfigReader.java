@@ -22,7 +22,7 @@ public class ConfigReader {
         SCREENSHOTS_PATH,
         TESTNG_XML_FILE,
         FEATURE_LIST_FILE,
-        LOG_LEVELS, REPORTERS
+        LOG_LEVELS, LOG_MANAGER_LOG_FILE, REPORTERS
     }
 
     public enum SupportedType {
