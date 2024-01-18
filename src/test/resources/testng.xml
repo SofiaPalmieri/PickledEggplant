@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "https://testng.org/testng-1.0.dtd">
+<suite name="Cucumber Test Suite" verbose="1">
+  <test name="Cucumber Test">
+    <parameter name="cucumber.plugin" value="com.olenickglobal.CucumberLogManager"/>
+    <parameter name="cucumber.plugin" value="com.olenickglobal.CucumberFlowManager"/>
+    <parameter name="cucumber.glue" value="classpath:com.olenickglobal.steps"/>
+    <classes>
+      <class name="com.olenickglobal.TestNGCucumberTests"/>
+    </classes>
+  </test>
+</suite>

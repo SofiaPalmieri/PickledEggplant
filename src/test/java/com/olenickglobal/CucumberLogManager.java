@@ -148,7 +148,7 @@ public class CucumberLogManager implements ConcurrentEventListener {
 
         ch.qos.logback.classic.Logger logger = context.getLogger("PickledFileLogger." + type);
         logger.addAppender(file);
-        logger.setAdditive(false); // Avoid logging messages being logged by parent loggers
+        logger.setAdditive(false);
 
         return logger;
     }
@@ -171,7 +171,7 @@ public class CucumberLogManager implements ConcurrentEventListener {
 
         ch.qos.logback.classic.Logger logger = context.getLogger("PickledConsoleLogger." + type);
         logger.addAppender(consoleAppender);
-        logger.setAdditive(false); // Avoid logging messages being logged by parent loggers
+        logger.setAdditive(false);
 
         return logger;
     }
