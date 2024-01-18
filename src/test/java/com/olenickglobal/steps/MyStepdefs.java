@@ -59,14 +59,17 @@ public class MyStepdefs implements ConcurrentEventListener {
         iManageSearchField.click(15);
         sut.sleep(2);
         sut.typeText(document);
+        sut.sleep(2);
         sut.typeText(Keys.ENTER);
         TextElement documentName = new TextElement(mainParent, document + ".docx");
+        sut.sleep(2);
         documentName.doubleClick(15);
 
     }
 
     @When("I open iManage")
-    public void openImanage() {
+    public void openImanage() throws InterruptedException {
+        sut.sleep(2);
         ImageElement iManageWork10DesktopIcon = new ImageElement(mainParent, "iManageWork10DesktopIcon.png");
         iManageWork10DesktopIcon.doubleClick(15);
         ImageElement ukButton = new ImageElement(mainParent, "ukButton.png");
@@ -74,7 +77,8 @@ public class MyStepdefs implements ConcurrentEventListener {
     }
 
     @And("{string} is checked out")
-    public void documentIsCheckedOut(String document) {
+    public void documentIsCheckedOut(String document) throws InterruptedException {
+        sut.sleep(10);
         ImageElement wordMinimizeButton = new ImageElement(mainParent, "wordMinimizeButton.png");
         wordMinimizeButton.click(15);
         ImageElement iManageCheckedOutIcon = new ImageElement(mainParent, "iManageCheckedOutIcon.png");
