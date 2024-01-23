@@ -1,6 +1,7 @@
 package com.olenickglobal.elements.events;
 
 import com.olenickglobal.elements.ScreenElement;
+import com.olenickglobal.formatting.EventFormatter;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
@@ -72,4 +73,7 @@ public record CaptureData(double timeout, ScreenElement element, Rectangle recta
     public CaptureDataBuilder builder() {
         return new CaptureDataBuilder(this);
     }
+
+
+
 }

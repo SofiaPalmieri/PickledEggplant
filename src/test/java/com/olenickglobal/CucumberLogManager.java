@@ -50,6 +50,7 @@ public class CucumberLogManager implements ConcurrentEventListener {
 
     private final Map<EventType, Level> eventLevels = new HashMap<>();
 
+    // TODO: Incorporate ability to change eventformatter through external JAR
     private final EventFormatter eventFormatter = new PickledEventFormatter();
 
 
@@ -98,17 +99,35 @@ public class CucumberLogManager implements ConcurrentEventListener {
 
                 Level level = this.eventLevels.get(type);
                 if (level == null) return;
+
                 String message = type.writeLog(this.eventFormatter, event);
                 Logger logger = getConsoleLogger(type);
                 logger.atLevel(level).log(message);
 
                 Logger fileLogger = getFileLogger(type);
                 String fileMessage = getFileMessage(event,fileLogger);
+
+
                 fileLogger.atLevel(level).log("Event Type: " + type + ", Data: " + fileMessage);
 
             });
         });
     }
+
+    private Logger getConsoleLogger(EventType type) {
+        return (Logger) LoggerFactory.getLogger("PickledConsoleLogger." + type);
+    }
+
+
+    private Logger getFileLogger(EventType type) {
+
+        String logFilePath = ConfigReader.getInstance().readConfig(ConfigReader.ConfigParam.LOG_MANAGER_LOG_FILE, ConfigReader.SupportedType.STRING);
+        System.setProperty("LOG_FILE", logFilePath);
+
+        return (Logger) LoggerFactory.getLogger("PickledFileLogger." + type);
+    }
+
+
 
     private String getFileMessage(Event<?,?> event, Logger fileLogger) {
 
@@ -129,52 +148,6 @@ public class CucumberLogManager implements ConcurrentEventListener {
         return jsonData;
     }
 
-    private Logger getFileLogger(EventType type) {
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        FileAppender<ILoggingEvent> file = new FileAppender<>();
-        file.setName("PickledFileLogger");
-        file.setFile(ConfigReader.getInstance().readConfig(ConfigReader.ConfigParam.LOG_MANAGER_LOG_FILE, ConfigReader.SupportedType.STRING));
-        file.setContext(context);
-        file.setAppend(true);
-
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(context);
-        encoder.setPattern("%d{HH:mm:ss.SSS} - %msg%n");
-        encoder.start();
-
-        file.setEncoder(encoder);
-        file.start();
-
-        ch.qos.logback.classic.Logger logger = context.getLogger("PickledFileLogger." + type);
-        logger.addAppender(file);
-        logger.setAdditive(false);
-
-        return logger;
-    }
-
-
-    private Logger getConsoleLogger(EventType type) {
-        LoggerContext context = (LoggerContext) LoggerFactory.getILoggerFactory();
-
-        ConsoleAppender<ILoggingEvent> consoleAppender = new ConsoleAppender<>();
-        consoleAppender.setName("PickledConsoleLogger");
-        consoleAppender.setContext(context);
-
-        PatternLayoutEncoder encoder = new PatternLayoutEncoder();
-        encoder.setContext(context);
-        encoder.setPattern("%d{HH:mm:ss.SSS} - %msg%n");
-        encoder.start();
-
-        consoleAppender.setEncoder(encoder);
-        consoleAppender.start();
-
-        ch.qos.logback.classic.Logger logger = context.getLogger("PickledConsoleLogger." + type);
-        logger.addAppender(consoleAppender);
-        logger.setAdditive(false);
-
-        return logger;
-    }
 
 
 }

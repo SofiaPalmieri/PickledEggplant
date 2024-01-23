@@ -3,7 +3,7 @@
 <suite name="Cucumber Test Suite" verbose="1">
   <test name="Cucumber Test">
     <parameter name="cucumber.plugin" value="com.olenickglobal.CucumberLogManager"/>
-    <parameter name="cucumber.plugin" value="com.olenickglobal.CucumberFlowManager"/>
+    <parameter name="cucumber.plugin" value="com.olenickglobal.CucumberReporterManager"/>
     <parameter name="cucumber.glue" value="classpath:com.olenickglobal.steps"/>
     <classes>
       <class name="com.olenickglobal.TestNGCucumberTests"/>

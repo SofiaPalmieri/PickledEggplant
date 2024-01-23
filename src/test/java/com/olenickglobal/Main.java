@@ -18,6 +18,8 @@ public class Main {
         String features = getFeatures(featureListFile);
         System.setProperty("cucumber.features", features);
         testNG.setTestSuites(Collections.singletonList(testNGXMLFile));
+        String logFilePath = ConfigReader.getInstance().readConfig(ConfigReader.ConfigParam.LOG_MANAGER_CONFIG_FILE, ConfigReader.SupportedType.STRING);
+        System.setProperty("LOG_FILE", logFilePath);
         testNG.run();
     }
 

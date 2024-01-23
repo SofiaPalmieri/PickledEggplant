@@ -1,0 +1,36 @@
+<configuration>
+
+    <!-- Define variables for customizable properties -->
+    <property name="LOG_FILE" value="${user.home}/app.log" />
+
+    <!-- File appender configuration -->
+    <appender name="FILE" class="ch.qos.logback.core.FileAppender">
+        <file>${LOG_FILE}</file>
+        <append>true</append>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Console appender configuration -->
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <!-- Logger configuration -->
+    <logger name="PickledFileLogger" level="DEBUG" additivity="false">
+        <appender-ref ref="FILE" />
+    </logger>
+
+    <logger name="PickledConsoleLogger" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE" />
+    </logger>
+
+    <!-- Root logger configuration -->
+    <root level="DEBUG">
+        <appender-ref ref="CONSOLE" />
+    </root>
+
+</configuration>

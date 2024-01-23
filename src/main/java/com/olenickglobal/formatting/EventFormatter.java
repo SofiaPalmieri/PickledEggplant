@@ -4,94 +4,95 @@ import com.olenickglobal.elements.events.*;
 
 public interface EventFormatter {
 
-    String logBeforeCapture(Event<?, ?> event);
 
-    String logAfterCapture(Event<?, ?> event);
+    String formatBeforeCapture(Event<?,?> event);
 
-    String logCaptureError(Event<?, ?> event);
+    String formatAfterCapture(Event<?,?> event);
 
-    String logBeforeClick(Event<?, ?> event);
+    String formatCaptureError(Event<?,?> event);
 
-    String logAfterClick(Event<?, ?> event);
+    String formatBeforeClick(Event<?, ?> event);
 
-    String logClickError(Event<?, ?> event);
+    String formatAfterClick(Event<?, ?> event);
 
-    String logBeforeDragDrop(Event<?, ?> event);
+    String formatClickError(Event<?, ?> event);
 
-    String logAfterDragDrop(Event<?, ?> event);
+    String formatBeforeDragDrop(Event<?, ?> event);
 
-    String logDragDropError(Event<?, ?> event);
+    String formatAfterDragDrop(Event<?, ?> event);
 
-    String logBeforeDragFrom(Event<?, ?> event);
+    String formatDragDropError(Event<?, ?> event);
 
-    String logAfterDragFrom(Event<?, ?> event);
+    String formatBeforeDragFrom(Event<?, ?> event);
 
-    String logDragFromError(Event<?, ?> event);
+    String formatAfterDragFrom(Event<?, ?> event);
 
-    String logBeforeDragTo(Event<?, ?> event);
+    String formatDragFromError(Event<?, ?> event);
 
-    String logAfterDragTo(Event<?, ?> event);
+    String formatBeforeDragTo(Event<?, ?> event);
 
-    String logDragToError(Event<?, ?> event);
+    String formatAfterDragTo(Event<?, ?> event);
 
-    String logBeforeHover(Event<?, ?> event);
+    String formatDragToError(Event<?, ?> event);
 
-    String logAfterHover(Event<?, ?> event);
+    String formatBeforeHover(Event<?, ?> event);
 
-    String logHoverError(Event<?, ?> event);
+    String formatAfterHover(Event<?, ?> event);
 
-    String logBeforeInteractRectCreate(Event<?, ?> event);
+    String formatHoverError(Event<?, ?> event);
 
-    String logAfterInteractRectCreate(Event<?, ?> event);
+    String formatBeforeInteractRectCreate(Event<?, ?> event);
 
-    String logInteractRectCreateError(Event<?, ?> event);
+    String formatAfterInteractRectCreate(Event<?, ?> event);
 
-    String logBeforeInteractRectSelect(Event<?, ?> event);
+    String formatInteractRectCreateError(Event<?, ?> event);
 
-    String logAfterInteractRectSelect(Event<?, ?> event);
+    String formatBeforeInteractRectSelect(Event<?, ?> event);
 
-    String logInteractRectSelectError(Event<?, ?> event);
+    String formatAfterInteractRectSelect(Event<?, ?> event);
 
-    String logBeforeLocating(Event<?, ?> event);
+    String formatInteractRectSelectError(Event<?, ?> event);
 
-    String logAfterLocating(Event<?, ?> event);
+    String formatBeforeLocating(Event<?, ?> event);
 
-    String logLocatingError(Event<?, ?> event);
+    String formatAfterLocating(Event<?, ?> event);
 
-    String logBeforeOCR(Event<?, ?> event);
+    String formatLocatingError(Event<?, ?> event);
 
-    String logAfterOCR(Event<?, ?> event);
+    String formatBeforeOCR(Event<?, ?> event);
 
-    String logOCRError(Event<?, ?> event);
+    String formatAfterOCR(Event<?, ?> event);
 
-    String logBeforeSaveScreenshot(Event<?, ?> event);
+    String formatOCRError(Event<?, ?> event);
 
-    String logAfterSaveScreenshot(Event<?, ?> event);
+    String formatBeforeSaveScreenshot(Event<?, ?> event);
 
-    String logSaveScreenshotError(Event<?, ?> event);
+    String formatAfterSaveScreenshot(Event<?, ?> event);
 
-    String logBeforeSelectMainBounds(Event<?, ?> event);
+    String formatSaveScreenshotError(Event<?, ?> event);
 
-    String logAfterSelectMainBounds(Event<?, ?> event);
+    String formatBeforeSelectMainBounds(Event<?, ?> event);
 
-    String logSelectMainBoundsError(Event<?, ?> event);
+    String formatAfterSelectMainBounds(Event<?, ?> event);
 
-    String logBeforeTyping(Event<?, ?> event);
+    String formatSelectMainBoundsError(Event<?, ?> event);
 
-    String logAfterTyping(Event<?, ?> event);
+    String formatBeforeTyping(Event<?, ?> event);
 
-    String logTypingError(Event<?, ?> event);
+    String formatAfterTyping(Event<?, ?> event);
 
-    String logTestCaseStarted(Event<?, ?> event);
+    String formatTypingError(Event<?, ?> event);
 
-    String logTestRunStarted(Event<?, ?> event);
+    String formatTestCaseStarted(Event<?, ?> event);
 
-    String logTestCaseFinished(Event<?, ?> event);
+    String formatTestRunStarted(Event<?, ?> event);
 
-    String logTestStepStarted(Event<?, ?> event);
+    String formatTestCaseFinished(Event<?, ?> event);
 
-    String logTestStepFinished(Event<?, ?> event);
+    String formatTestStepStarted(Event<?, ?> event);
 
-    String logTestRunFinished(Event<?, ?> event);
+    String formatTestStepFinished(Event<?, ?> event);
+
+    String formatTestRunFinished(Event<?, ?> event);
 }
 

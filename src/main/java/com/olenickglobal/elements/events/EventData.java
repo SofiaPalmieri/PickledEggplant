@@ -1,5 +1,7 @@
 package com.olenickglobal.elements.events;
 
+import com.olenickglobal.formatting.EventFormatter;
+
 /**
  * Event data.
  *
@@ -7,4 +9,5 @@ package com.olenickglobal.elements.events;
  */
 public interface EventData<B> {
     B builder();
+
 }
