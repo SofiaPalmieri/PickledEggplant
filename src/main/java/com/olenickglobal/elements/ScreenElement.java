@@ -17,7 +17,7 @@ import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
 import com.olenickglobal.exceptions.InteractionFailedException;
 import com.olenickglobal.utils.FunctionWithException;
-import formatting.ElementFormatter;
+import com.olenickglobal.formatting.ElementFormatter;
 
 import java.awt.Point;
 import java.awt.Rectangle;

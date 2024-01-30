@@ -7,8 +7,7 @@ import com.olenickglobal.elements.events.LocatingData;
 import com.olenickglobal.entities.SUT;
 import com.olenickglobal.exceptions.ElementNotFoundException;
 import com.olenickglobal.exceptions.ImageNotFoundException;
-import formatting.ElementFormatter;
-import org.sikuli.script.FindFailed;
+import com.olenickglobal.formatting.ElementFormatter;
 
 import java.awt.*;
 

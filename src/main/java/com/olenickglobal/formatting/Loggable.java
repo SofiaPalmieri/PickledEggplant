@@ -1,6 +1,4 @@
-package formatting;
-
-import com.beust.jcommander.internal.Nullable;
+package com.olenickglobal.formatting;
 
 public interface Loggable {
 

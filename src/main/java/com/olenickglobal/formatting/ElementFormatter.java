@@ -1,4 +1,4 @@
-package formatting;
+package com.olenickglobal.formatting;
 
 import com.olenickglobal.elements.ContainerElement;
 import com.olenickglobal.elements.ImageElement;

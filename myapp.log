@@ -1,0 +1,59 @@
+12:29:06.537 - Event Type: CLICK_ERROR, Data: {"action":"LEFT_CLICK","timeout":2.0,"modifiers":0,"element":{"lastMatchLocation":null,"offset":{"origin":"CENTER","x":0,"y":0},"parent":{"lastMatchLocation":{"x":403,"y":41,"width":1235,"height":498},"offset":{"origin":"CENTER","x":0,"y":0},"parent":null,"screen":{"sut":{},"bounds":{"x":0,"y":0,"width":1760,"height":990},"text":"u\n\nBE PickledEggplantLautaro ~\n\n9 master v\n\n5 Main v\n\nics\n\nFe:\n\n&\n\nia)\n\n&\n\nes\n\nzt\n\nack\n\nsi\n\nmi\n\no\n\no\n\ng\n\nProject ~\n\nMain. jave\n\nconfig.json\n\nCucumberFlowManager\n\n<encoder>\n\na\n\nwun\n\n>gManager\n\n<pattern>%d{HH:mm:ss.SSS} - %msg%n</pattern>\n\n</encoder>\n\n%\n\nMain\n\nTestNGCucumberTests\n\n</appender>\n\nTestResults\n\n80\n\nfi\n\n-\n\ni\n\n<p testng.xml\n\noo\n\n<appender name=\"F\n\nE_LO\n\nclas:\n\nile\n\nesources\n\n<filesmyapp.log</Fite>\n\nD features\n\nDiimages\n\n0 config.json\n\n<encoder>\n\n@ cucumber.properties\n\n<pattern>%d{HH:mm:ss.SSS} - %msg%n</pattern>\n\n<P logback-test.xml\n\n</encoder>\n\n© -runtime,json\n\n</appender>\n\nselected.features\n\n<root Level=\"info\">\n\n>o\n\nour.\n\n<appender-ref ref=\n\nI>\n\n-o\n\n</root>\n\n>a\n\n>a\n\nconfiguration\n\nRun\n\nMain\n\n[a]\n\nea\n\n5\n\na\n\n12\n\n4.043 - [TestNG] Runnin\n\nC:\\Users\\Lauta\\OneDrive\\Escritorio\\qualitest\\testng. xm\n\n=\n\nPa\n\ni\n\nExternally added files can be added to Git\n\nView Files\n\nAlways Add Do\n\nAsk Again\n\np\n\n© PickledEggplan\n\nautaro > src > test > resources > </> logback-test.xml\n\n18:1\n\nCRLF\n\na\n\n4 spaces\n\na\n\nM\n\npie\n\nG\n\n2\n\na\n\nENG\n"},"usingCachedParentLocation":true},"screen":{"sut":{},"bounds":{"x":0,"y":0,"width":1760,"height":990},"text":"u\n\nBE PickledEggplantLautaro ~\n\n9 master v\n\n5 Main v\n\nics\n\nFe:\n\n&\n\nia)\n\n&\n\nes\n\nzt\n\nack\n\nsi\n\nmi\n\no\n\no\n\ng\n\nProject ~\n\nMain. jave\n\nconfig.json\n\nCucumberFlowManager\n\n<encoder>\n\na\n\nwun\n\n>gManager\n\n<pattern>%d{HH:mm:ss.SSS} - %msg%n</pattern>\n\n</encoder>\n\n%\n\nMain\n\nTestNGCucumberTests\n\n</appender>\n\nTestResults\n\n80\n\nfi\n\n-\n\ni\n\n<p testng.xml\n\noo\n\n<appender name=\"F\n\nE_LO\n\nclas:\n\nile\n\nesources\n\n<filesmyapp.log</Fite>\n\nD features\n\nDiimages\n\n0 config.json\n\n<encoder>\n\n@ cucumber.properties\n\n<pattern>%d{HH:mm:ss.SSS} - %msg%n</pattern>\n\n<P logback-test.xml\n\n</encoder>\n\n© -runtime,json\n\n</appender>\n\nselected.features\n\n<root Level=\"info\">\n\n>o\n\nour.\n\n<appender-ref ref=\n\nI>\n\n-o\n\n</root>\n\n>a\n\n>a\n\nconfiguration\n\nRun\n\nMain\n\n[a]\n\nea\n\n5\n\na\n\n12\n\n4.043 - [TestNG] Runnin\n\nC:\\Users\\Lauta\\OneDrive\\Escritorio\\qualitest\\testng. xm\n\n=\n\nPa\n\ni\n\nExternally added files can be added to Git\n\nView Files\n\nAlways Add Do\n\nAsk Again\n\np\n\n© PickledEggplan\n\nautaro > src > test > resources > </> logback-test.xml\n\n18:1\n\nCRLF\n\na\n\n4 spaces\n\na\n\nM\n\npie\n\nG\n\n2\n\na\n\nENG\n"},"name":"C:\\Users\\lauta\\OneDrive\\Escritorio\\Qualitest/windowsStartButton.png","usingCachedParentLocation":true},"elementRectangle":null,"offset":{"origin":"CENTER","x":0,"y":0},"target":null,"delay":0.0}
+12:32:03.703 - Event Type: CLICK_ERROR, Data: {
+  "action" : "LEFT_CLICK",
+  "timeout" : 2.0,
+  "modifiers" : 0,
+  "element" : {
+    "lastMatchLocation" : null,
+    "offset" : {
+      "origin" : "CENTER",
+      "x" : 0,
+      "y" : 0
+    },
+    "parent" : {
+      "lastMatchLocation" : {
+        "x" : 222,
+        "y" : 115,
+        "width" : 1537,
+        "height" : 808
+      },
+      "offset" : {
+        "origin" : "CENTER",
+        "x" : 0,
+        "y" : 0
+      },
+      "parent" : null,
+      "screen" : {
+        "sut" : { },
+        "bounds" : {
+          "x" : 0,
+          "y" : 0,
+          "width" : 1760,
+          "height" : 990
+        },
+        "text" : "u\n\nBE PickledEggplantLautaro ~\n\nmaster v\n\nFe:\n\n&\n\nia)\n\n5 Main v 8\n\n&\n\n2)\n\na\n\nwun\n\nrT\n\no\n\no\n\nray\n\nProject ~\n\njanager.java\n\nMain.java\n\nconfig.json\n\nentities\n\nLevel level = th\n\nntLevels.get (ty\n\ne);\n\nasny\n\nif (level\n\nnull) reti\n\n8\n\nBiexceptions\n\n=\n\nString message\n\n=\n\ntype.writeLog(this\n\nentF\n\nmatter\n\ner,\n\nevent);\n\n%\n\n© formatting\n\n—-m\n\nBitestinfo\n\n=\n\n=\n\nPil\n\nButils\n\nLogger fileLogger\n\nLoggerFactory.getLogger( nan\n\nDH\n\n80\n\nesources\n\n=\n\noo\n\nObjecttapper mapper\n\nnew ObjectMapper();\n\nv Dtest\n\n=\n\nSimpleModule module\n\nw SimpleModute() ;\n\nY Dijava\n\n¥ Bcom.olenickglobal\n\nmodule.\n\naddSerializer(ni\n\nsuTSerializer(SUT.class));\n\nmodule\n\n> Biexceptions\n\naddSerializer(ni\n\nRectangleSerializer(Rectangle.cla\n\nDH\n\n> Bilisteners\n\n¥ Bsteps\n\nmapper\n\nregisterModule(module) ;\n\nINDENT.\n\n© Mystepdefs\n\n138\n\nmapper\n\nenable(SerializationFeature.\n\nINDENT\n\nOUTPUT:\n\na\n\n© CucumberFlowManager\n\nZ\n\nstring\n\njsonData =\n\n3\n\na\n\numberLot\n\njanager\n\ntry {\n\n© Main\n\n=\n\n=\n\njsonData\n\nmapper .writeValueAsstring(event.data());\n\n© TestNGCucumberTests\n\nAg\n\nch (JsonProcessingException e) {\n\n© TestResults\n\nfileLoggen.ernon(-Ennon.while.pansing.eventdatanto JSON p€):\n\nRun\n\nES Main\n\nG\n\n(a)\n\nea\n\nUse!\n\n=\n\nPa\n\nExternally added files can be added to Git\n\nView Files\n\nAlways Add Don’\n\nAsk Again\n\n© PickledEggplan\n\nautaro > src > test > java > com > olenickglobal » © CucumberLogManager > @ setEve\n\nPublisher >\n\nLambda >\n\nLambda\n\n138:67\n\nCRLF\n\nUTF-8\n\na\n\n4 spaces\n\na\n\nM\n\nean\n\nLL w&\n\nG\n\n2\n\na\n\nENG\n"
+      },
+      "usingCachedParentLocation" : true
+    },
+    "screen" : {
+      "sut" : { },
+      "bounds" : {
+        "x" : 0,
+        "y" : 0,
+        "width" : 1760,
+        "height" : 990
+      },
+      "text" : "u\n\nBE PickledEggplantLautaro ~\n\nmaster v\n\nFe:\n\n&\n\nia)\n\n5 Main v 8\n\n&\n\n2)\n\na\n\nwun\n\nrT\n\no\n\no\n\nray\n\nProject ~\n\njanager.java\n\nMain.java\n\nconfig.json\n\nentities\n\nLevel level = th\n\nntLevels.get (ty\n\ne);\n\nasny\n\nif (level\n\nnull) reti\n\n8\n\nBiexceptions\n\n=\n\nString message\n\n=\n\ntype.writeLog(this\n\nentF\n\nmatter\n\ner,\n\nevent);\n\n%\n\n© formatting\n\n—-m\n\nBitestinfo\n\n=\n\n=\n\nPil\n\nButils\n\nLogger fileLogger\n\nLoggerFactory.getLogger( nan\n\nDH\n\n80\n\nesources\n\n=\n\noo\n\nObjecttapper mapper\n\nnew ObjectMapper();\n\nv Dtest\n\n=\n\nSimpleModule module\n\nw SimpleModute() ;\n\nY Dijava\n\n¥ Bcom.olenickglobal\n\nmodule.\n\naddSerializer(ni\n\nsuTSerializer(SUT.class));\n\nmodule\n\n> Biexceptions\n\naddSerializer(ni\n\nRectangleSerializer(Rectangle.cla\n\nDH\n\n> Bilisteners\n\n¥ Bsteps\n\nmapper\n\nregisterModule(module) ;\n\nINDENT.\n\n© Mystepdefs\n\n138\n\nmapper\n\nenable(SerializationFeature.\n\nINDENT\n\nOUTPUT:\n\na\n\n© CucumberFlowManager\n\nZ\n\nstring\n\njsonData =\n\n3\n\na\n\numberLot\n\njanager\n\ntry {\n\n© Main\n\n=\n\n=\n\njsonData\n\nmapper .writeValueAsstring(event.data());\n\n© TestNGCucumberTests\n\nAg\n\nch (JsonProcessingException e) {\n\n© TestResults\n\nfileLoggen.ernon(-Ennon.while.pansing.eventdatanto JSON p€):\n\nRun\n\nES Main\n\nG\n\n(a)\n\nea\n\nc\n\nr\n\nUse!\n\n=\n\nPa\n\nExternally added files can be added to Git\n\nView Files\n\nAlways Add Don’\n\nAsk Again\n\n© PickledEggplan\n\nautaro > src > test > java > com > olenickglobal » © CucumberLogManager > @ setEve\n\nPublisher >\n\nLambda >\n\nLambda\n\n138:67\n\nCRLF\n\nUTF-8\n\na\n\n4 spaces\n\na\n\nM\n\nean\n\nLL w&\n\nG\n\n2\n\na\n\nENG\n"
+    },
+    "name" : "C:\\Users\\lauta\\OneDrive\\Escritorio\\Qualitest/windowsStartButton.png",
+    "usingCachedParentLocation" : true
+  },
+  "elementRectangle" : null,
+  "offset" : {
+    "origin" : "CENTER",
+    "x" : 0,
+    "y" : 0
+  },
+  "target" : null,
+  "delay" : 0.0
+}
